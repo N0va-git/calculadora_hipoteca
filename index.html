@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador Hipotecario Residencial | UNAM FES Acatlán</title>
+  <meta name="description" content="Simulador hipotecario educativo: mensualidad, CAT, tabla de amortización y prepagos." />
+  <meta name="theme-color" content="#0b1d3a" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>" />
+  <style>
+    :root {
+      --crimson: #1d6fb8;
+      --crimson-dark: #12497f;
+      --crimson-soft: #eaf3fc;
+      --gold: #d9a21b;
+      --navy: #0b1d3a;
+      --navy-light: #1e3f6e;
+      --slate: #334155;
+      --muted: #64748b;
+      --bg: #eef2f6;
+      --surface: #ffffff;
+      --border: #dce3ec;
+      --emerald: #0d8a4e;
+      --emerald-bg: #ecfdf5;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --radius: 14px;
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 12px 28px rgba(15, 23, 42, 0.09);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* PORTADA INSTITUCIONAL CON ILUSTRACIÓN VECTORIAL */
+    .hero-header {
+      background: linear-gradient(125deg, var(--navy) 0%, var(--navy-light) 55%, var(--crimson-dark) 100%);
+      color: #fff;
+      padding: 20px 0 26px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    .hero-header::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      top: -60px;
+      width: 340px;
+      height: 340px;
+      background: radial-gradient(circle, rgba(217, 162, 27, 0.30) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 1460px;
+      margin: 0 auto;
+      padding: 0 22px;
+    }
+
+    .hero-grid {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-illustration {
+      width: 78px;
+      height: 68px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(6px);
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .hero-title-box span.tag {
+      display: inline-block;
+      background: var(--crimson);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      padding: 2px 9px;
+      border-radius: 99px;
+    }
+
+    .hero-title-box span.live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(13, 138, 78, 0.25);
+      border: 1px solid rgba(110, 231, 183, 0.4);
+      color: #a7f3d0;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 9px;
+      border-radius: 99px;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34d399;
+    }
+
+    .hero-title-box h1 {
+      font-size: 1.44rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .hero-title-box p {
+      font-size: 0.83rem;
+      color: #cbd5e1;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 9px 15px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.83rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.18s ease;
+    }
+
+    .btn-primary {
+      background: var(--crimson);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(29, 111, 184, 0.35);
+    }
+    .btn-primary:hover { background: #2a86d6; transform: translateY(-1px); }
+
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(4px);
+    }
+    .btn-glass:hover { background: rgba(255, 255, 255, 0.24); }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--navy);
+      border-color: var(--border);
+    }
+    .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
+
+    /* ESTRUCTURA PRINCIPAL */
+    .main-layout {
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      gap: 22px;
+      padding-top: 22px;
+      padding-bottom: 48px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      min-width: 0;
+    }
+
+    .sidebar-card {
+      position: sticky;
+      top: 18px;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 11px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #f1f5f9;
+      gap: 8px;
+    }
+
+    .panel-title h2, .panel-title h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--navy);
+    }
+
+    .badge-step {
+      background: var(--crimson-soft);
+      color: var(--crimson);
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    /* TARJETA CONTEXTUAL DEL PROGRAMA (REVELACIÓN PROGRESIVA) */
+    .program-guide-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #eef4fa 100%);
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid var(--navy-light);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+    }
+    .program-guide-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .program-guide-top strong {
+      color: var(--navy);
+      font-size: 0.81rem;
+    }
+    .btn-link-info {
+      background: none;
+      border: none;
+      color: var(--crimson);
+      font-weight: 800;
+      font-size: 0.74rem;
+      cursor: pointer;
+      text-decoration: underline;
+      white-space: nowrap;
+    }
+    .btn-link-info:hover { color: var(--crimson-dark); }
+    .program-guide-card p {
+      color: var(--slate);
+      line-height: 1.38;
+    }
+
+    /* FORMULARIO */
+    .form-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .section-divider {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      padding-top: 4px;
+      border-top: 1px dashed var(--border);
+      margin-top: 2px;
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      width: 100%;
+    }
+
+    .form-group label {
+      font-size: 0.77rem;
+      font-weight: 700;
+      color: var(--slate);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .input-affix {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+    }
+
+    .input-affix span.prefix {
+      position: absolute;
+      left: 10px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .input-affix span.suffix {
+      position: absolute;
+      right: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .input-affix input.has-prefix { padding-left: 22px; }
+    .input-affix input.has-suffix { padding-right: 24px; }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--navy);
+      background: #f8fafc;
+      transition: all 0.15s ease;
+      font-variant-numeric: tabular-nums;
+      text-overflow: ellipsis;
+    }
+
+    .form-group input:hover,
+    .form-group select:hover {
+      border-color: #b8c4d4;
+      background: #ffffff;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      background: #ffffff;
+      border-color: var(--crimson);
+      box-shadow: 0 0 0 3px rgba(29, 111, 184, 0.12);
+    }
+
+    .hint { font-size: 0.73rem; color: var(--muted); line-height: 1.35; }
+
+    .sub-box {
+      background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1.5px dashed #94a3b8;
+      border-radius: 10px;
+      padding: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sub-box h4 {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--navy-light);
+    }
+
+    .hidden { display: none !important; }
+
+    /* PANEL DERECHO */
+    .content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .alert-banner {
+      background: var(--amber-bg);
+      color: #92400e;
+      border-left: 4px solid var(--amber);
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 0.83rem;
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* TARJETAS KPI */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+    .kpi-card.crimson {
+      background: linear-gradient(135deg, #1d6fb8 0%, #12497f 100%);
+      color: #fff;
+      border: none;
+    }
+    .kpi-card.crimson .kpi-label,
+    .kpi-card.crimson .kpi-sub { color: rgba(255, 255, 255, 0.9); }
+    .kpi-card.crimson .kpi-value { color: #fff; }
+
+    .kpi-card.navy { border-top: 4px solid var(--navy-light); }
+    .kpi-card.emerald { border-top: 4px solid var(--emerald); }
+    .kpi-card.amber { border-top: 4px solid var(--amber); }
+
+    .kpi-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--muted);
+    }
+    .kpi-value {
+      display: block;
+      font-size: 1.38rem;
+      font-weight: 800;
+      margin: 4px 0;
+      color: var(--navy);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.3px;
+    }
+    .kpi-sub { font-size: 0.75rem; color: var(--muted); display: block; }
+
+    /* BARRA DE PESTAÑAS */
+    .tabs-bar {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+      background: var(--surface);
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 9px 8px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--slate);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tab-btn:hover { background: #f1f5f9; color: var(--navy); }
+    .tab-btn.active {
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(11, 29, 58, 0.22);
+    }
+
+    .tab-panel { display: none; flex-direction: column; gap: 18px; }
+    .tab-panel.active { display: flex; }
+
+    /* TABLAS DE RESUMEN */
+    .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .mini-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    .mini-table td { padding: 8px 4px; border-bottom: 1px solid #f1f5f9; }
+    .mini-table td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+    .mini-table tr.total-row td {
+      border-top: 2px solid var(--navy);
+      border-bottom: none;
+      font-weight: 800;
+      color: var(--crimson);
+      padding-top: 10px;
+      font-size: 0.94rem;
+    }
+
+    /* GRÁFICAS SVG INTERACTIVAS */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 18px;
+    }
+    .chart-full { grid-column: 1 / -1; }
+    .svg-box {
+      width: 100%;
+      min-height: 255px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .chart-legend {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 10px;
+      font-size: 0.77rem;
+      font-weight: 600;
+      color: var(--slate);
+    }
+    .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+    .svg-hover { cursor: pointer; transition: opacity 0.15s ease; }
+    .svg-hover:hover { opacity: 0.82; }
+
+    /* TOOLTIP INTELIGENTE CON DETECCIÓN DE BORDE */
+    .chart-tooltip {
+      position: fixed;
+      background: rgba(11, 29, 58, 0.96);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      pointer-events: none;
+      z-index: 1000;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      border-left: 3px solid var(--crimson);
+      display: none;
+      white-space: nowrap;
+      max-width: calc(100vw - 24px);
+    }
+
+    /* MODAL FICHA TÉCNICA DE PROGRAMAS Y SEGUROS */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.62);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1200;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      border-top: 5px solid var(--crimson);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .modal-close {
+      background: #f1f5f9;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--navy);
+    }
+    .modal-close:hover { background: #e2e8f0; }
+    .guide-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .guide-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+    }
+    .guide-item h4 {
+      font-size: 0.85rem;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+    .guide-item p {
+      font-size: 0.79rem;
+      color: var(--slate);
+    }
+
+    /* SIMULADOR ABONOS */
+    .prepago-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .savings-box {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      background: var(--emerald-bg);
+      border: 1.5px solid #a7f3d0;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .savings-box span { display: block; font-size: 0.75rem; font-weight: 700; color: #065f46; }
+    .savings-box strong { font-size: 1.16rem; font-weight: 800; color: var(--emerald); font-variant-numeric: tabular-nums; }
+
+    /* TABLA DE AMORTIZACIÓN */
+    .table-scroll {
+      overflow-x: auto;
+      max-height: 540px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .amort-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .amort-table th {
+      background: var(--navy);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      padding: 10px 8px;
+      text-align: right;
+      font-weight: 700;
+      white-space: nowrap;
+      z-index: 5;
+    }
+    .amort-table th:first-child, .amort-table td:first-child,
+    .amort-table th:nth-child(2), .amort-table td:nth-child(2) { text-align: center; }
+    .amort-table td {
+      padding: 7px 8px;
+      text-align: right;
+      border-bottom: 1px solid #eef2f6;
+      white-space: nowrap;
+    }
+    .amort-table tbody tr:nth-child(even) { background: #f8fafc; }
+    .amort-table tbody tr:hover { background: #eaf3fc; }
+
+    /* CARÁTULA CONDUSEF */
+    .caratula-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--crimson);
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .reca-pill {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+    }
+    .reca-pill strong { display: block; color: var(--navy); font-size: 0.88rem; }
+    .caratula-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .car-cell {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 13px;
+      background: #fafbfc;
+    }
+    .car-cell span { display: block; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--muted); }
+    .car-cell strong { display: block; font-size: 1.02rem; margin-top: 3px; color: var(--navy); }
+    .car-cell .cat-big { font-size: 1.65rem; color: var(--crimson); }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: var(--navy);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      border-left: 4px solid var(--emerald);
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 0.25s ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .formula-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy-light);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.79rem;
+      color: var(--slate);
+    }
+    .formula-box code {
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      color: var(--crimson-dark);
+    }
+
+    @media (max-width: 1120px) {
+      .main-layout { grid-template-columns: 1fr; }
+      .sidebar-card { position: static; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .tabs-bar { grid-template-columns: repeat(2, 1fr); }
+      .two-col, .charts-grid, .prepago-grid, .savings-box, .caratula-grid, .guide-grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      .hero-actions, .sidebar-card, .tabs-bar, .btn { display: none !important; }
+      .main-layout { grid-template-columns: 1fr; padding-top: 0; }
+      body { background: #fff; }
+      .card { box-shadow: none; border: 1px solid #ccc; }
+    }
+
+    /* ===== MEJORAS V2 ===== */
+    html { scroll-behavior: smooth; }
+    a.btn { text-decoration: none; }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+    .form-group input:focus-visible, .form-group select:focus-visible { outline: none; }
+    .hero-title-box span.tag { background: var(--gold); color: #0b1d3a; }
+    .sidebar-card { max-height: calc(100vh - 36px); overflow-y: auto; }
+    .resumen-frase { background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--gold); border-radius: var(--radius); padding: 14px 18px; font-size: 1rem; line-height: 1.6; box-shadow: var(--shadow-sm); }
+    .resumen-frase strong { color: var(--crimson-dark); }
+    details.adv { border-top: 1px dashed var(--border); padding-top: 8px; }
+    details.adv summary { cursor: pointer; font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+    details.adv .adv-body { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
+    details.glosario summary { cursor: pointer; font-weight: 800; color: var(--navy); }
+    .glosario dl { display: grid; grid-template-columns: 190px 1fr; gap: 8px 16px; font-size: 0.85rem; margin-top: 12px; }
+    .glosario dt { font-weight: 800; color: var(--navy); }
+    .glosario dd { color: var(--slate); }
+    .site-footer { background: var(--navy); color: #cbd5e1; padding: 26px 0; font-size: 0.85rem; }
+    .site-footer strong { color: #fff; font-size: 1rem; }
+    .site-footer ul { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 8px 0 12px; }
+    .site-footer li::before { content: "• "; color: var(--gold); }
+    .site-footer .disclaimer { font-size: 0.76rem; color: #94a3b8; max-width: 900px; }
+    .sticky-bar { display: none; }
+    html.presenting { font-size: 118%; }
+    @media (max-width: 1120px) {
+      .sidebar-card { max-height: none; overflow: visible; }
+      .tabs-bar { display: flex; overflow-x: auto; }
+      .tab-btn { flex: 0 0 auto; padding: 9px 14px; }
+      .sticky-bar { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; background: var(--navy); color: #fff; padding: 10px 14px; gap: 10px; align-items: center; justify-content: space-between; box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.25); }
+      .sticky-bar small { color: #cbd5e1; font-size: 0.72rem; }
+      body { padding-bottom: 74px; }
+      .toast { bottom: 88px; left: 12px; right: 12px; }
+    }
+    @media (max-width: 640px) {
+      .container { padding: 0 14px; }
+      .hero-illustration { display: none; }
+      .hero-title-box h1 { font-size: 1.2rem; }
+      .hero-actions { width: 100%; }
+      .hero-actions .btn { flex: 1 1 auto; justify-content: center; }
+      .kpi-grid { grid-template-columns: 1fr; }
+      .card { padding: 14px; }
+      .form-group input, .form-group select { font-size: 16px; }
+      .glosario dl { grid-template-columns: 1fr; }
+      .panel-title { flex-wrap: wrap; }
+    }
+    @media print {
+      body.printing-car .hero-header, body.printing-car .kpi-grid, body.printing-car .tabs-bar,
+      body.printing-car .sidebar-card, body.printing-car .alert-banner, body.printing-car .resumen-frase,
+      body.printing-car .site-footer, body.printing-car .sticky-bar,
+      body.printing-car .tab-panel:not(#tabCaratula) { display: none !important; }
+      body.printing-car #tabCaratula { display: flex !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PORTADA CON ILUSTRACIÓN ARQUITECTÓNICA Y FINANCIERA VECTORIAL -->
+  <header class="hero-header">
+    <div class="container hero-grid">
+      <div class="hero-brand">
+        <div class="hero-illustration" aria-hidden="true">
+          <svg width="56" height="48" viewBox="0 0 64 54" fill="none">
+            <!-- Barras financieras de fondo -->
+            <rect x="8" y="30" width="6" height="16" rx="2" fill="#38bdf8" fill-opacity="0.45"/>
+            <rect x="17" y="22" width="6" height="24" rx="2" fill="#38bdf8" fill-opacity="0.65"/>
+            <rect x="26" y="14" width="6" height="32" rx="2" fill="#38bdf8" fill-opacity="0.85"/>
+            <!-- Vivienda arquitectónica -->
+            <path d="M24 25L40 12L56 25V46H45V35H35V46H24V25Z" fill="#ffffff"/>
+            <path d="M40 12L56 25H51.5L40 15.8L28.5 25H24L40 12Z" fill="#f5c542"/>
+            <!-- Ventana -->
+            <rect x="37" y="24" width="6" height="5" rx="1" fill="#1e3f6e"/>
+            <!-- Sello de verificación -->
+            <circle cx="52" cy="41" r="9.5" fill="#0d8a4e" stroke="#0b1d3a" stroke-width="2"/>
+            <path d="M48.2 41L50.8 43.6L56 38.4" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="hero-title-box">
+          <div class="hero-badges">
+            <span class="tag">Proyecto Final • Matemáticas Financieras</span>
+            <span class="tag">UNAM · FES Acatlán</span>
+            <span class="live-pill"><i class="live-dot"></i> Cálculo en Tiempo Real • Base 360</span>
+          </div>
+          <h1>Simulador Hipotecario Residencial</h1>
+          <p>Factor al Millar (ppm) • Esquemas Pagos Oportunos, Valora, Apoyo Infonavit y Cofinavit</p>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <button type="button" id="btnOpenGuide" class="btn btn-glass">
+          Guía de Créditos y Seguros
+        </button>
+        <button type="button" id="btnPresent" class="btn btn-glass" aria-pressed="false">Modo presentación</button>
+        <button type="button" id="btnGoldenTest" class="btn btn-glass">
+          Validar con Excel ($100k)
+        </button>
+        <button type="button" id="btnSaveScenario" class="btn btn-primary">
+          + Guardar Escenario
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-layout">
+    <!-- PANEL IZQUIERDO: PARÁMETROS -->
+    <aside class="card sidebar-card" id="config">
+      <div class="panel-title">
+        <h2>Configuración del Crédito</h2>
+        <span class="badge-step">Parámetros</span>
+      </div>
+
+      <!-- TARJETA CONTEXTUAL DEL PROGRAMA ACTIVO -->
+      <div class="program-guide-card">
+        <div class="program-guide-top">
+          <strong id="guideCardTitle">Adquisición Tradicional</strong>
+          <button type="button" id="btnInlineGuide" class="btn-link-info">Ver beneficios y seguros</button>
+        </div>
+        <p id="guideCardDesc">Financiamiento bancario puro de hasta 90% del valor del inmueble con enganche mínimo del 10%.</p>
+      </div>
+
+      <form id="simForm" class="form-stack">
+        <div class="section-divider">I. Programa y Base de Cálculo</div>
+
+        <div class="form-group">
+          <label for="programa">1. Programa Hipotecario</label>
+          <select id="programa">
+            <option value="1" selected>Adquisición Tradicional (Hasta 90% LTV)</option>
+            <option value="2">Adquisición con Apoyo Infonavit</option>
+            <option value="3">Cofinavit (Crédito + Infonavit + Subcuenta)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="modoCalculo">2. Cómo desea hacer su cálculo</label>
+          <select id="modoCalculo">
+            <option value="1" selected>Por Valor del Inmueble</option>
+            <option value="2">Por Ingresos Mensuales</option>
+            <option value="3">Por Monto de Crédito</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="groupValorVivienda">
+          <label for="valorVivienda">Valor de la Vivienda (MXN)</label>
+          <div class="input-affix">
+            <span class="prefix">$</span>
+            <input type="number" id="valorVivienda" class="has-prefix" value="1500000" min="50000" step="1000" />
+          </div>
+        </div>
+
+        <div class="form-group hidden" id="groupIngresos">
+          <label for="ingresosMensuales">Ingresos Mensuales Comprobables</label>
+          <div class="input-affix">
+            <span class="prefix">$</span>
+            <input type="number" id="ingresosMensuales" class="has-prefix" value="45000" min="7500" step="500" />
+          </div>
+        </div>
+
+        <div class="form-group hidden" id="groupMontoDirecto">
+          <label for="montoCreditoDirecto">Monto de Crédito Solicitado</label>
+          <div class="input-affix">
+            <span class="prefix">$</span>
+            <input type="number" id="montoCreditoDirecto" class="has-prefix" value="1500000" min="120000" step="5000" />
+          </div>
+        </div>
+
+        <!-- SUB-PANEL APOYO INFONAVIT -->
+        <div class="sub-box hidden" id="boxApoyoInfonavit">
+          <h4>Apoyo Infonavit (UMA 2026: $117.31)</h4>
+          <div class="form-group">
+            <label for="sueldoCotizacion">Sueldo Mensual Cotización IMSS</label>
+            <div class="input-affix">
+              <span class="prefix">$</span>
+              <input type="number" id="sueldoCotizacion" class="has-prefix" value="35000" min="0" step="500" />
+            </div>
+            <span class="hint">Tope legal 25 UMAs ($89,155.60/mes). Abona 5% bimestral directo a capital.</span>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL COFINAVIT -->
+        <div class="sub-box hidden" id="boxCofinavit">
+          <h4>Datos Cofinavit</h4>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label for="creditoInfonavit">Crédito Infonavit</label>
+              <div class="input-affix">
+                <span class="prefix">$</span>
+                <input type="number" id="creditoInfonavit" class="has-prefix" value="450000" min="0" step="5000" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="subcuentaVivienda">Subcuenta Viv.</label>
+              <div class="input-affix">
+                <span class="prefix">$</span>
+                <input type="number" id="subcuentaVivienda" class="has-prefix" value="120000" min="0" step="5000" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-divider">II. Condiciones Financieras</div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="producto">Producto / Esquema</label>
+            <select id="producto">
+              <option value="2" selected>Pagos Oportunos</option>
+              <option value="1">Valora (Tasa Fija)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="plazo">Plazo del Crédito</label>
+            <select id="plazo">
+              <option value="7">7 años (84 m)</option>
+              <option value="10">10 años (120 m)</option>
+              <option value="15" selected>15 años (180 m)</option>
+              <option value="20">20 años (240 m)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="tasaAnual">Tasa Anual Inicial</label>
+            <div class="input-affix">
+              <input type="number" id="tasaAnual" class="has-suffix" value="10.00" min="6.00" max="18.00" step="0.05" />
+              <span class="suffix">%</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="tipoComision">Tipo de Comisión</label>
+            <select id="tipoComision">
+              <option value="2" selected>Pago anticipado</option>
+              <option value="1">Comisión apertura</option>
+            </select>
+          </div>
+        </div>
+
+        <details class="adv">
+        <summary>III. Opciones avanzadas: seguros y fecha de corte</summary>
+        <div class="adv-body">
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label for="segurosExternos">¿Seguros Externos?</label>
+            <select id="segurosExternos">
+              <option value="2" selected>NO (Del Banco)</option>
+              <option value="1">SÍ (Externos)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="valorDestructibleInput">Valor Destructible</label>
+            <div class="input-affix">
+              <span class="prefix">$</span>
+              <input type="number" id="valorDestructibleInput" class="has-prefix" value="0" min="0" step="5000" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fechaInicio">Fecha de Inicio / Corte Mensual</label>
+          <input type="date" id="fechaInicio" value="2026-12-17" />
+          <span class="hint">Si eliges un día 29, 30 o 31, se ajusta al último día de cada mes.</span>
+        </div>
+        </div>
+        </details>
+      </form>
+    </aside>
+
+    <!-- PANEL DERECHO -->
+    <section class="content-area" id="resultados">
+      <div id="policyAlert" class="alert-banner hidden"></div>
+      <div id="resumenFrase" class="resumen-frase" aria-live="polite"></div>
+
+      <!-- 4 TARJETAS KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card crimson">
+          <span class="kpi-label">Pago Mensual Total (Mes 1)</span>
+          <strong class="kpi-value" id="kpiMensualidadTotal">$0.00</strong>
+          <span class="kpi-sub" id="kpiErogacionBase">Erogación: $0.00 + Seguros</span>
+        </div>
+
+        <div class="kpi-card navy">
+          <span class="kpi-label">Crédito Banco Otorgado</span>
+          <strong class="kpi-value" id="kpiCreditoBanco">$0.00</strong>
+          <span class="kpi-sub" id="kpiLtv">Aforo (LTV): 90.0% • ppm: 10.84</span>
+        </div>
+
+        <div class="kpi-card amber">
+          <span class="kpi-label">Inversión Inicial Cliente</span>
+          <strong class="kpi-value" id="kpiInversionCliente">$0.00</strong>
+          <span class="kpi-sub" id="kpiEngancheGastos">Enganche + Gastos Orig.</span>
+        </div>
+
+        <div class="kpi-card emerald">
+          <span class="kpi-label">CAT Informativo (Sin IVA)</span>
+          <strong class="kpi-value" id="kpiCat">0.0%</strong>
+          <span class="kpi-sub" id="kpiPlazoReal">Liquida en: 15 años 0 meses</span>
+        </div>
+      </div>
+
+      <!-- BARRA DE PESTAÑAS -->
+      <nav class="tabs-bar">
+        <button type="button" class="tab-btn active" data-tab="tabResumen">Resumen y Gráficas</button>
+        <button type="button" class="tab-btn" data-tab="tabPrepagos">Simulador Abonos</button>
+        <button type="button" class="tab-btn" data-tab="tabTabla">Tabla Amortización</button>
+        <button type="button" class="tab-btn" data-tab="tabComparador">Comparador (<span id="countScenarios">0</span>)</button>
+        <button type="button" class="tab-btn" data-tab="tabCaratula">Carátula CONDUSEF</button>
+      </nav>
+
+      <!-- PESTAÑA 1: RESUMEN Y GRÁFICAS -->
+      <div id="tabResumen" class="tab-panel active">
+        <div class="two-col">
+          <div class="card">
+            <div class="panel-title">
+              <h3>Detalle de Recursos</h3>
+              <span class="badge-step">Aforo</span>
+            </div>
+            <table class="mini-table">
+              <tbody>
+                <tr><td>Valor de la Vivienda</td><td class="num" id="resValorVivienda">$0.00</td></tr>
+                <tr><td>Crédito Máximo Posible</td><td class="num" id="resCreditoMax">$0.00</td></tr>
+                <tr><td><strong>Crédito Banco Solicitado</strong></td><td class="num" id="resCreditoBanco">$0.00</td></tr>
+                <tr class="row-cofin hidden"><td>Crédito Infonavit + Subcuenta</td><td class="num" id="resCofinTotal">$0.00</td></tr>
+                <tr><td>Enganche para la Compra</td><td class="num" id="resEnganche">$0.00</td></tr>
+                <tr class="total-row"><td>Total Recursos Inmueble</td><td class="num" id="resTotalRecursos">$0.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="panel-title">
+              <h3>Gastos de Originación e Inversión</h3>
+              <span class="badge-step">Desembolso</span>
+            </div>
+            <table class="mini-table">
+              <tbody>
+                <tr><td>Impuestos y Derechos (3.0%)</td><td class="num" id="resImpuestos">$0.00</td></tr>
+                <tr><td>Honorarios Notariales (2.0%)</td><td class="num" id="resNotariales">$0.00</td></tr>
+                <tr><td>Avalúo Hipotecario (Tabulador)</td><td class="num" id="resAvaluo">$0.00</td></tr>
+                <tr><td>Comisión por Contratación</td><td class="num" id="resComisionAp">$0.00</td></tr>
+                <tr><td><strong>Total Gastos de Originación</strong></td><td class="num" id="resGastosOrig">$0.00</td></tr>
+                <tr class="total-row"><td>Inversión Inicial Total Cliente</td><td class="num" id="resInversionTotal">$0.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="formula-box">
+          <strong>Metodología Actuarial:</strong>
+          ppm = <code>[i / (1 − (1+i)<sup>−n</sup>)] × 1,000</code> con <code>i = (Tasa / 12) × (365.25 / 360)</code> &nbsp;•&nbsp;
+          Erogación = <code>(Crédito / 1,000) × ppm</code> &nbsp;•&nbsp;
+          Interés = <code>Saldo × (Tasa / 360) × Días_Mes</code> &nbsp;•&nbsp;
+          CAT = <code>(1 + TIR_mensual)^12 - 1</code><br><span id="formulaEjemplo"></span>
+        </div>
+
+        <!-- GRÁFICAS INTERACTIVAS -->
+        <div class="charts-grid">
+          <div class="card">
+            <div class="panel-title">
+              <h3>Composición Total del Crédito</h3>
+              <span class="badge-step">Costo Total</span>
+            </div>
+            <div id="donutContainer" class="svg-box"></div>
+          </div>
+
+          <div class="card">
+            <div class="panel-title">
+              <h3>Amortización vs. Intereses por Año</h3>
+              <span class="badge-step">Flujo Anual</span>
+            </div>
+            <div id="barContainer" class="svg-box"></div>
+          </div>
+
+          <div class="card chart-full">
+            <div class="panel-title">
+              <h3>Evolución del Saldo Insoluto a través de los Años (Original vs. Acelerado)</h3>
+              <span class="badge-step">Curva de Deuda</span>
+            </div>
+            <div id="lineContainer" class="svg-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 2: SIMULADOR DINÁMICO DE ABONOS A CAPITAL -->
+      <div id="tabPrepagos" class="tab-panel">
+        <div class="card">
+          <div class="panel-title">
+            <div>
+              <h3>Simulador Dinámico de Pagos Anticipados a Capital</h3>
+              <p class="hint">Evalúa el impacto financiero de realizar abonos extraordinarios sobre el plazo o la mensualidad.</p>
+            </div>
+            <div class="form-group" style="max-width: 240px;">
+              <label for="estrategiaPrepago">Aplicar anticipos a:</label>
+              <select id="estrategiaPrepago">
+                <option value="plazo" selected>Disminución de plazo</option>
+                <option value="pago">Disminución de pago mensual</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="prepago-grid">
+            <div class="form-group">
+              <label for="prepagoMensualRecurrente">Abono Extra Recurrente Mensual</label>
+              <div class="input-affix">
+                <span class="prefix">$</span>
+                <input type="number" id="prepagoMensualRecurrente" class="has-prefix" value="0" min="0" step="500" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="prepagoMesUnico">Mes del Abono Único (#)</label>
+              <input type="number" id="prepagoMesUnico" value="12" min="1" max="240" />
+            </div>
+            <div class="form-group">
+              <label for="prepagoMontoUnico">Monto del Abono Único</label>
+              <div class="input-affix">
+                <span class="prefix">$</span>
+                <input type="number" id="prepagoMontoUnico" class="has-prefix" value="0" min="0" step="1000" />
+              </div>
+            </div>
+          </div>
+
+          <div class="savings-box">
+            <div>
+              <span>Intereses Brutos Ahorrados</span>
+              <strong id="saveIntereses">$0.00</strong>
+            </div>
+            <div>
+              <span>Tiempo Recortado</span>
+              <strong id="saveMeses">0 meses</strong>
+            </div>
+            <div>
+              <span id="lblPenalizacion">Penalización por prepago</span>
+              <strong id="savePenalizacion">$0.00</strong>
+            </div>
+            <div>
+              <span>Ahorro Neto Real</span>
+              <strong id="saveNeto">$0.00</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 3: TABLA DE AMORTIZACIÓN -->
+      <div id="tabTabla" class="tab-panel">
+        <div class="card">
+          <div class="panel-title">
+            <div>
+              <h3>Tabla de Amortización Detallada (Corrida Completa)</h3>
+              <p class="hint">Base comercial 360 días, días naturales por mes, seguros y reducción anual de tasa en Pagos Oportunos.</p>
+            </div>
+            <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+              <div class="form-group" style="width:auto; min-width:170px;">
+                <label for="vistaTabla">Vista de la tabla</label>
+                <select id="vistaTabla"><option value="mensual" selected>Mes por mes</option><option value="anual">Resumen por año</option></select>
+              </div>
+              <button type="button" id="btnExportCsv" class="btn btn-outline">Exportar a Excel (.CSV)</button>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="amort-table">
+              <thead>
+                <tr>
+                  <th>Per.</th>
+                  <th>Fecha Corte</th>
+                  <th>Días</th>
+                  <th>Saldo Inicial</th>
+                  <th>Erogación</th>
+                  <th>Interés</th>
+                  <th>Amortización</th>
+                  <th>Prepago</th>
+                  <th>Penaliz.</th>
+                  <th>Apoyo Inf.</th>
+                  <th>Seg. Vida</th>
+                  <th>Seg. Daños</th>
+                  <th>Pago Total</th>
+                  <th>Tasa</th>
+                  <th>Saldo Final</th>
+                </tr>
+              </thead>
+              <tbody id="amortBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 4: COMPARADOR DE ESCENARIOS -->
+      <div id="tabComparador" class="tab-panel">
+        <div class="card">
+          <div class="panel-title">
+            <div>
+              <h3>Comparador de Escenarios Guardados (Máx. 3)</h3>
+              <p class="hint">Configura un crédito a la izquierda y presiona "+ Guardar Escenario" para contrastar opciones lado a lado.</p>
+            </div>
+            <button type="button" id="btnClearScenarios" class="btn btn-outline">Limpiar Comparador</button>
+          </div>
+          <div id="comparadorContainer" class="table-scroll"></div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 5: CARÁTULA TIPO CONDUSEF -->
+      <div id="tabCaratula" class="tab-panel">
+        <div class="card">
+          <div class="caratula-top">
+            <div>
+              <span class="badge-step">Carat_cont • Anexo Informativo</span>
+              <h2 style="margin-top:4px;">Carátula de Crédito Hipotecario</h2>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <div class="reca-pill">
+                <span>Registro RECA CONDUSEF:</span>
+                <strong id="carReca">0319-138-038229/06-03318-1225</strong>
+              </div>
+              <button type="button" id="btnPrint" class="btn btn-outline">Imprimir / PDF</button>
+            </div>
+          </div>
+
+          <p class="hint" style="margin-bottom:12px;">Documento ilustrativo generado por un simulador académico (UNAM FES Acatlán). No es una carátula oficial ni una oferta de crédito.</p>
+          <div class="caratula-grid">
+            <div class="car-cell">
+              <span>Producto Comercial</span>
+              <strong id="carProducto">Adquisición Tradicional (Pagos Oportunos)</strong>
+            </div>
+            <div class="car-cell">
+              <span>Tipo de Crédito y Moneda</span>
+              <strong>Crédito Hipotecario • Pesos Mexicanos (MXN)</strong>
+            </div>
+            <div class="car-cell">
+              <span>CAT (Costo Anual Total) Sin IVA</span>
+              <strong class="cat-big" id="carCat">11.4%</strong>
+              <span style="text-transform:none; font-weight:500;">Para fines informativos y de comparación exclusivamente.</span>
+            </div>
+            <div class="car-cell">
+              <span>Tasa de Interés Anual Ordinaria</span>
+              <strong id="carTasa">10.00%</strong>
+              <span style="text-transform:none; font-weight:500;">No aplica Tasa de Interés Moratoria.</span>
+            </div>
+            <div class="car-cell">
+              <span>Monto de la Línea de Crédito</span>
+              <strong id="carMonto">$0.00</strong>
+            </div>
+            <div class="car-cell">
+              <span>Monto Total a Pagar (Suma de Flujos)</span>
+              <strong id="carMontoTotal">$0.00</strong>
+            </div>
+            <div class="car-cell">
+              <span>Plazo del Crédito</span>
+              <strong id="carPlazo">15 años (180 meses)</strong>
+            </div>
+            <div class="car-cell">
+              <span>Fecha Límite de Pago</span>
+              <strong id="carFechaLimite">El día 17 de cada mes</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      <details class="card glosario">
+        <summary>¿Qué significan estos términos?</summary>
+        <dl>
+          <dt>LTV / Aforo</dt><dd>Porcentaje del valor de la vivienda que financia el banco (ej. 90% = enganche de 10%).</dd>
+          <dt>ppm (factor al millar)</dt><dd>Pago mensual por cada $1,000 de crédito. Se obtiene con la fórmula de anualidad.</dd>
+          <dt>Erogación</dt><dd>Pago mensual base (capital + intereses), sin seguros.</dd>
+          <dt>CAT</dt><dd>Costo Anual Total: el costo real del crédito incluyendo comisiones y seguros; sirve para comparar ofertas.</dd>
+          <dt>Pagos Oportunos / Valora</dt><dd>Pagos Oportunos baja la tasa 0.20% cada año si pagas puntual; Valora mantiene tasa fija.</dd>
+          <dt>Valor destructible</dt><dd>Valor de la construcción sin el terreno; sobre él se calcula el seguro de daños.</dd>
+          <dt>Prepago</dt><dd>Abono extra a capital para terminar antes de pagar o bajar tu mensualidad.</dd>
+          <dt>Saldo insoluto</dt><dd>Lo que todavía debes del crédito después de cada pago.</dd>
+        </dl>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <strong>UNAM · Facultad de Estudios Superiores Acatlán</strong>
+      <ul id="equipo">
+        <li>Integrante 1</li>
+        <li>Integrante 2</li>
+        <li>Integrante 3</li>
+      </ul>
+      <p class="disclaimer">Simulador con fines exclusivamente educativos. Los resultados son estimaciones y no constituyen una oferta, cotización ni asesoría financiera. Las tasas, comisiones y requisitos reales dependen de cada institución.</p>
+    </div>
+  </footer>
+
+  <div class="sticky-bar" aria-label="Resumen rápido">
+    <div><small>Mensualidad (mes 1)</small><br><strong id="stickyPago">$0.00</strong></div>
+    <div style="display:flex; gap:8px;">
+      <a class="btn btn-glass" href="#config">Editar ↑</a>
+      <a class="btn btn-primary" href="#resultados">Resultados ↓</a>
+    </div>
+  </div>
+
+  <!-- VENTANA EMERGENTE: FICHA TÉCNICA DE PROGRAMAS, ESQUEMAS Y SEGUROS -->
+  <div id="guideModal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <span class="badge-step">Referencia Rápida</span>
+          <h3 style="margin-top:4px;">Guía de Programas Hipotecarios y Seguros</h3>
+        </div>
+        <button type="button" id="btnCloseGuide" class="modal-close" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-item">
+          <h4>1. Adquisición Tradicional</h4>
+          <p>Crédito hipotecario bancario puro. Financia hasta el <strong>90% (LTV)</strong> del valor del inmueble; el cliente cubre el 10% de enganche más gastos de originación (notariales, impuestos y avalúo).</p>
+        </div>
+        <div class="guide-item">
+          <h4>2. Adquisición con Apoyo Infonavit</h4>
+          <p>El banco otorga el crédito (hasta 95% LTV) y las <strong>aportaciones patronales bimestrales (5%)</strong> topadas a 25 UMAs (UMA diaria 2026: $117.31) se abonan directo a capital cada 2 meses, reduciendo plazo e intereses.</p>
+        </div>
+        <div class="guide-item">
+          <h4>3. Cofinavit</h4>
+          <p>Suma tres fuentes: crédito bancario + crédito otorgado por el Infonavit + saldo de la <strong>Subcuenta de Vivienda</strong>, permitiendo cubrir hasta el 95%-100% del inmueble y reducir el desembolso inicial.</p>
+        </div>
+        <div class="guide-item">
+          <h4>4. Pagos Oportunos vs. Valora</h4>
+          <p><strong>Valora</strong> mantiene tasa fija todo el plazo. <strong>Pagos Oportunos</strong> premia la puntualidad reduciendo la tasa en <strong>-0.20% cada año</strong> (hasta -1.00% acumulado) a partir del mes 13.</p>
+        </div>
+        <div class="guide-item">
+          <h4>5. Seguro de Vida y Desempleo</h4>
+          <p>Factor de <strong>0.60 al millar (0.0006)</strong> mensual calculado sobre el saldo insoluto del crédito. Cubre el saldo deudor en caso de fallecimiento, invalidez o desempleo involuntario.</p>
+        </div>
+        <div class="guide-item">
+          <h4>6. Seguro de Daños al Inmueble</h4>
+          <p>Factor de <strong>0.31 al millar (0.00031)</strong> mensual aplicado únicamente sobre el <strong>Valor Destructible</strong> (construcción, excluyendo el valor del terreno). Puede contratarse con aseguradora externa.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="chartTooltip" class="chart-tooltip"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      const CONSTANTS = {
+        UMA_2026: 117.31,
+        TOPE_UMAS: 25,
+        PORC_APORTACION: 0.05,
+        DIAS_BIMESTRE: 60.8,
+        INC_ANUAL_INFONAVIT: 0.03,
+        SEGURO_VIDA_MILLAR: 0.0006,
+        SEGURO_DANOS_MILLAR: 0.00031,
+        IMPUESTOS_DERECHOS: 0.03,
+        HONORARIOS_NOTARIALES: 0.02,
+        IVA: 0.16,
+        DESC_ANUAL_PO: 0.002,
+        MAX_DESC_PO: 0.010,
+        CAPACIDAD_PAGO: 0.40,
+        DIAS_MES_SALARIO: 30.4,
+        TASA_MINIMA_PO: 0.05
+      };
+
+      const PROGRAMAS = {
+        1: {
+          id: 1,
+          nombre: "Adquisición Tradicional",
+          resumen: "Financiamiento bancario puro de hasta 90% del valor del inmueble con enganche mínimo del 10%.",
+          comApertura: 0.0125,
+          comPrepago: 0.03,
+          ltvMax: 0.90,
+          ingresosMin: 10000,
+          montoMin: 250000,
+          viviendaMin: 350000,
+          recaPO: "0319-138-038229/06-03318-1225",
+          recaValora: "0319-138-038232/05-03320-1225"
+        },
+        2: {
+          id: 2,
+          nombre: "Adquisición con Apoyo Infonavit",
+          resumen: "Usa las aportaciones patronales bimestrales del 5% (tope 25 UMAs) como abonos directos a capital.",
+          comApertura: 0.0075,
+          comPrepago: 0.00,
+          ltvMax: 0.95,
+          ingresosMin: 7500,
+          montoMin: 250000,
+          viviendaMin: 350000,
+          recaPO: "0319-138-038230/04-03319-1225",
+          recaValora: "0319-138-038235/04-03321-1225"
+        },
+        3: {
+          id: 3,
+          nombre: "Cofinavit",
+          resumen: "Combina crédito bancario, crédito Infonavit y saldo de Subcuenta de Vivienda para minimizar el enganche.",
+          comApertura: 0.0075,
+          comPrepago: 0.00,
+          ltvMax: 0.95,
+          ingresosMin: 7500,
+          montoMin: 120000,
+          viviendaMin: 300000,
+          recaPO: "0319-138-038237/04-03336-1225",
+          recaValora: "0319-138-038237/04-03336-1225"
+        }
+      };
+
+      const TABLA_AVALUO = [
+        { max: 500000, importe: 1900 },
+        { max: 1000000, importe: 3300 },
+        { max: 1500000, importe: 4500 },
+        { max: 2000000, importe: 5750 },
+        { max: 2500000, importe: 7000 },
+        { max: 3000000, importe: 8200 },
+        { max: 4000000, importe: 11000 },
+        { max: 5000000, importe: 13900 },
+        { max: 6000000, importe: 15500 },
+        { max: 7000000, importe: 19000 },
+        { max: 8000000, importe: 20000 },
+        { max: 9000000, importe: 20100 },
+        { max: 10000000, importe: 22500 },
+        { max: 11000000, importe: 27000 },
+        { max: 12000000, importe: 28000 },
+        { max: 13000000, importe: 30000 },
+        { max: 14000000, importe: 32000 },
+        { max: 15000000, importe: 34000 }
+      ];
+
+      function obtenerCostoAvaluo(valorVivienda) {
+        if (!valorVivienda || valorVivienda <= 0) return 0;
+        for (let i = 0; i < TABLA_AVALUO.length; i++) {
+          if (valorVivienda <= TABLA_AVALUO[i].max) return TABLA_AVALUO[i].importe;
+        }
+        return 34000;
+      }
+
+      function calcularFactorMillar(tasaAnual, plazoAnios) {
+        const n = plazoAnios * 12;
+        const iMensual = (tasaAnual / 12) * (365.25 / 360);
+        if (iMensual === 0) return 1000 / n;
+        const ppm = (iMensual / (1 - Math.pow(1 + iMensual, -n))) * 1000;
+        return Number(ppm.toFixed(2));
+      }
+
+      function calcularTIR(flujos, guess) {
+        let r = guess || 0.01;
+        for (let iter = 0; iter < 120; iter++) {
+          let npv = 0;
+          let dNpv = 0;
+          for (let t = 0; t < flujos.length; t++) {
+            const denom = Math.pow(1 + r, t);
+            npv += flujos[t] / denom;
+            if (t > 0) dNpv -= (t * flujos[t]) / Math.pow(1 + r, t + 1);
+          }
+          if (Math.abs(npv) < 1e-8) return r;
+          if (Math.abs(dNpv) < 1e-12) break;
+          r = r - npv / dNpv;
+        }
+        return r;
+      }
+
+      function obtenerDiasPeriodo(fechaBaseStr, periodoIndex) {
+        const partes = fechaBaseStr.split("-").map(Number);
+        const y = partes[0] || 2026;
+        const m = partes[1] || 12;
+        const d = partes[2] || 17;
+        const primeroDelMes = new Date(y, m - 1 + periodoIndex, 1);
+        const diasMes = new Date(primeroDelMes.getFullYear(), primeroDelMes.getMonth() + 1, 0).getDate();
+        const fecha = new Date(primeroDelMes.getFullYear(), primeroDelMes.getMonth(), Math.min(d, diasMes));
+        const mesesCortos = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+        const fechaTexto = String(fecha.getDate()).padStart(2, "0") + "/" + mesesCortos[fecha.getMonth()] + "/" + fecha.getFullYear();
+        return { diasMes: diasMes, fechaTexto: fechaTexto };
+      }
+
+      function generarCorrida(cfg) {
+        const mesesPlazo = cfg.plazoAnios * 12;
+        const ppmInicial = calcularFactorMillar(cfg.tasaInicial, cfg.plazoAnios);
+        let erogacionFija = Number(((cfg.creditoBanco / 1000) * ppmInicial).toFixed(2));
+
+        const salarioDiario = cfg.sueldoCotizacion / CONSTANTS.DIAS_MES_SALARIO;
+        const salarioTopado = Math.min(salarioDiario, CONSTANTS.UMA_2026 * CONSTANTS.TOPE_UMAS);
+        let aportacionBimestralActual = cfg.esApoyoInfonavit
+          ? Number((salarioTopado * CONSTANTS.PORC_APORTACION * CONSTANTS.DIAS_BIMESTRE).toFixed(2))
+          : 0;
+
+        let saldoInicial = cfg.creditoBanco;
+        const filas = [];
+        let totalIntereses = 0;
+        let totalSeguros = 0;
+        let totalPenalizacion = 0;
+        let totalPagado = 0;
+        let mesLiquidacion = mesesPlazo;
+        let liquidado = false;
+        let tasaAnterior = cfg.tasaInicial;
+
+        for (let p = 1; p <= 240; p++) {
+          if (saldoInicial <= 0.005 || p > mesesPlazo) {
+            if (!liquidado && p > 1) {
+              mesLiquidacion = p - 1;
+              liquidado = true;
+            }
+            break;
+          }
+
+          const infoFecha = obtenerDiasPeriodo(cfg.fechaInicio, p - 1);
+          const anioTranscurrido = Math.floor((p - 1) / 12);
+
+          let tasaAplicada = cfg.tasaInicial;
+          if (cfg.esPagosOportunos && anioTranscurrido > 0) {
+            const descuento = Math.min(anioTranscurrido * CONSTANTS.DESC_ANUAL_PO, CONSTANTS.MAX_DESC_PO);
+            tasaAplicada = Math.max(CONSTANTS.TASA_MINIMA_PO, Number((cfg.tasaInicial - descuento).toFixed(5)));
+          }
+
+          if (cfg.esApoyoInfonavit && p > 12 && (p - 2) % 12 === 0) {
+            aportacionBimestralActual = Number((aportacionBimestralActual * (1 + CONSTANTS.INC_ANUAL_INFONAVIT)).toFixed(2));
+          }
+
+          const interes = Number(((tasaAplicada / 360) * infoFecha.diasMes * saldoInicial).toFixed(2));
+
+          let erogacion = erogacionFija;
+          if (saldoInicial + interes <= erogacion || p === mesesPlazo) {
+            erogacion = Number((saldoInicial + interes).toFixed(2));
+          }
+
+          const amortizacion = Number(Math.max(0, erogacion - interes).toFixed(2));
+
+          let prepago = cfg.prepagoRecurrente + (p === cfg.prepagoMesUnico ? cfg.prepagoMontoUnico : 0);
+          const remanenteTrasAmort = Math.max(0, saldoInicial - amortizacion);
+          if (prepago > remanenteTrasAmort) prepago = Number(remanenteTrasAmort.toFixed(2));
+
+          const penalizacion =
+            prepago > 0 && cfg.comisionPrepagoPct > 0
+              ? Number((prepago * cfg.comisionPrepagoPct * (1 + CONSTANTS.IVA)).toFixed(2))
+              : 0;
+
+          let apoyoInf = 0;
+          if (cfg.esApoyoInfonavit && p % 2 === 0) {
+            const remanenteTrasPrepago = Math.max(0, remanenteTrasAmort - prepago);
+            apoyoInf = Number(Math.min(aportacionBimestralActual, remanenteTrasPrepago).toFixed(2));
+          }
+
+          const saldoFinal = Number(Math.max(0, saldoInicial - amortizacion - prepago - apoyoInf).toFixed(2));
+
+          const segVida = cfg.segurosExternos ? 0 : Number((saldoInicial * CONSTANTS.SEGURO_VIDA_MILLAR).toFixed(2));
+          const segDanos = cfg.segurosExternos ? 0 : Number((cfg.valorDestructible * CONSTANTS.SEGURO_DANOS_MILLAR).toFixed(2));
+
+          const pagoMensualTotal = Number((erogacion + prepago + penalizacion + segVida + segDanos).toFixed(2));
+
+          filas.push({
+            periodo: p,
+            fecha: infoFecha.fechaTexto,
+            dias: infoFecha.diasMes,
+            saldoInicial: saldoInicial,
+            erogacion: erogacion,
+            interes: interes,
+            amortizacion: amortizacion,
+            prepago: prepago,
+            penalizacion: penalizacion,
+            apoyoInf: apoyoInf,
+            segVida: segVida,
+            segDanos: segDanos,
+            pagoMensualTotal: pagoMensualTotal,
+            tasaAplicada: tasaAplicada,
+            saldoFinal: saldoFinal
+          });
+
+          totalIntereses += interes;
+          totalSeguros += segVida + segDanos;
+          totalPenalizacion += penalizacion;
+          totalPagado += pagoMensualTotal;
+
+          if (cfg.estrategiaPrepago === "pago" && (prepago > 0 || apoyoInf > 0) && saldoFinal > 0) {
+            const mesesRestantes = mesesPlazo - p;
+            if (mesesRestantes > 0) {
+              const iMes = (tasaAplicada / 12) * (365.25 / 360);
+              erogacionFija = Number(((saldoFinal * iMes) / (1 - Math.pow(1 + iMes, -mesesRestantes))).toFixed(2));
+            }
+          }
+
+          if (saldoFinal <= 0.005 && !liquidado) {
+            mesLiquidacion = p;
+            liquidado = true;
+          }
+
+          saldoInicial = saldoFinal;
+        }
+
+        return {
+          filas: filas,
+          ppmInicial: ppmInicial,
+          totalIntereses: Number(totalIntereses.toFixed(2)),
+          totalSeguros: Number(totalSeguros.toFixed(2)),
+          totalPenalizacion: Number(totalPenalizacion.toFixed(2)),
+          totalPagado: Number(totalPagado.toFixed(2)),
+          mesLiquidacion: mesLiquidacion
+        };
+      }
+
+      function ejecutarSimulacion(params) {
+        const prog = PROGRAMAS[params.programaId] || PROGRAMAS[1];
+        const ppm = calcularFactorMillar(params.tasaAnual, params.plazoAnios);
+
+        let valorVivienda = params.valorVivienda;
+        let creditoMaximo = 0;
+        let creditoBanco = 0;
+        const cofinExtra = params.programaId === 3 ? params.creditoInfonavit + params.subcuentaVivienda : 0;
+
+        if (params.modoCalculo === 1) {
+          creditoMaximo = Number((valorVivienda * prog.ltvMax).toFixed(2));
+          creditoBanco = Math.max(0, Number((creditoMaximo - (params.programaId === 3 ? params.creditoInfonavit : 0)).toFixed(2)));
+        } else if (params.modoCalculo === 2) {
+          const pagoMaxAdmisible = params.ingresosMensuales * CONSTANTS.CAPACIDAD_PAGO;
+          creditoMaximo = Number((pagoMaxAdmisible / (ppm / 1000)).toFixed(2));
+          creditoBanco = creditoMaximo;
+          valorVivienda = Number((creditoBanco / prog.ltvMax).toFixed(2));
+        } else {
+          creditoBanco = params.montoCreditoDirecto;
+          creditoMaximo = creditoBanco;
+          valorVivienda = Number((creditoBanco / prog.ltvMax).toFixed(2));
+        }
+
+        const valorDestructible = params.valorDestructible;
+        const impuestosDerechos = Number((valorVivienda * CONSTANTS.IMPUESTOS_DERECHOS).toFixed(2));
+        const honorariosNotariales = Number((valorVivienda * CONSTANTS.HONORARIOS_NOTARIALES).toFixed(2));
+        const avaluo = obtenerCostoAvaluo(valorVivienda);
+        const comisionApertura = params.tipoComision === 1 ? Number((creditoBanco * prog.comApertura).toFixed(2)) : 0;
+        const comisionPrepagoPct = params.tipoComision === 2 ? prog.comPrepago : 0;
+
+        const gastosOriginacion = Number((impuestosDerechos + honorariosNotariales + avaluo + comisionApertura).toFixed(2));
+        const enganche = Number(Math.max(0, valorVivienda - creditoBanco - cofinExtra).toFixed(2));
+        const inversionCliente = Number((enganche + gastosOriginacion).toFixed(2));
+
+        const corridaBase = generarCorrida({
+          creditoBanco: creditoBanco,
+          valorDestructible: valorDestructible,
+          plazoAnios: params.plazoAnios,
+          tasaInicial: params.tasaAnual,
+          esPagosOportunos: params.productoId === 2,
+          comisionPrepagoPct: comisionPrepagoPct,
+          segurosExternos: params.segurosExternos === 1,
+          esApoyoInfonavit: params.programaId === 2,
+          sueldoCotizacion: params.sueldoCotizacion,
+          fechaInicio: params.fechaInicio,
+          prepagoRecurrente: 0,
+          prepagoMesUnico: 0,
+          prepagoMontoUnico: 0,
+          estrategiaPrepago: "plazo"
+        });
+
+        const corridaActiva = generarCorrida({
+          creditoBanco: creditoBanco,
+          valorDestructible: valorDestructible,
+          plazoAnios: params.plazoAnios,
+          tasaInicial: params.tasaAnual,
+          esPagosOportunos: params.productoId === 2,
+          comisionPrepagoPct: comisionPrepagoPct,
+          segurosExternos: params.segurosExternos === 1,
+          esApoyoInfonavit: params.programaId === 2,
+          sueldoCotizacion: params.sueldoCotizacion,
+          fechaInicio: params.fechaInicio,
+          prepagoRecurrente: params.prepagoRecurrente,
+          prepagoMesUnico: params.prepagoMesUnico,
+          prepagoMontoUnico: params.prepagoMontoUnico,
+          estrategiaPrepago: params.estrategiaPrepago
+        });
+
+        const flujosCAT = [comisionApertura + avaluo - creditoBanco];
+        for (let i = 0; i < corridaBase.filas.length; i++) {
+          const f = corridaBase.filas[i];
+          flujosCAT.push(f.erogacion + f.segVida + f.segDanos);
+        }
+        const tirMensual = calcularTIR(flujosCAT, 0.01);
+        const catSinIva = creditoBanco > 0 && isFinite(tirMensual) ? Math.max(0, Math.pow(1 + tirMensual, 12) - 1) : 0;
+
+        const alertas = [];
+        if (params.modoCalculo === 2 && params.ingresosMensuales < prog.ingresosMin) {
+          alertas.push("Ingresos por debajo del mínimo del programa ($" + prog.ingresosMin.toLocaleString("es-MX") + ").");
+        }
+        if (params.programaId === 3 && params.modoCalculo !== 1) {
+          alertas.push("En Cofinavit conviene calcular 'Por Valor del Inmueble' para que el crédito Infonavit se descuente correctamente.");
+        }
+        if (valorVivienda < prog.viviendaMin) {
+          alertas.push("Valor de vivienda debajo del mínimo de política ($" + prog.viviendaMin.toLocaleString("es-MX") + ").");
+        }
+        if (creditoBanco < prog.montoMin) {
+          alertas.push("Crédito debajo del mínimo del programa ($" + prog.montoMin.toLocaleString("es-MX") + ").");
+        }
+
+        return {
+          prog: prog,
+          ppm: ppm,
+          valorVivienda: valorVivienda,
+          creditoMaximo: creditoMaximo,
+          creditoBanco: creditoBanco,
+          cofinExtra: cofinExtra,
+          enganche: enganche,
+          impuestosDerechos: impuestosDerechos,
+          honorariosNotariales: honorariosNotariales,
+          avaluo: avaluo,
+          comisionApertura: comisionApertura,
+          gastosOriginacion: gastosOriginacion,
+          inversionCliente: inversionCliente,
+          catSinIva: catSinIva,
+          corridaBase: corridaBase,
+          corridaActiva: corridaActiva,
+          alertas: alertas
+        };
+      }
+
+      // GRÁFICAS VECTORIALES CON DETECCIÓN INTELIGENTE DE BORDES DE PANTALLA
+      const fmtMXN = (n) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(n || 0);
+      const fmtShort = (n) => {
+        if (n >= 1000000) return "$" + (n / 1000000).toFixed(1) + "M";
+        if (n >= 1000) return "$" + (n / 1000).toFixed(0) + "k";
+        return "$" + n.toFixed(0);
+      };
+      const fmtPct = (n, d) => ((n || 0) * 100).toFixed(d === undefined ? 1 : d) + "%";
+
+      function enlazarTooltips(container) {
+        const tip = document.getElementById("chartTooltip");
+        container.querySelectorAll("[data-tip]").forEach((el) => {
+          el.addEventListener("mousemove", (e) => {
+            tip.textContent = el.getAttribute("data-tip");
+            tip.style.display = "block";
+            const w = tip.offsetWidth;
+            const h = tip.offsetHeight;
+            let left = e.clientX + 14;
+            if (left + w > window.innerWidth - 16) {
+              left = Math.max(12, e.clientX - w - 14);
+            }
+            let top = e.clientY - h - 10;
+            if (top < 12) {
+              top = e.clientY + 16;
+            }
+            tip.style.left = left + "px";
+            tip.style.top = top + "px";
+          });
+          el.addEventListener("mouseleave", () => {
+            tip.style.display = "none";
+          });
+        });
+      }
+
+      function dibujarDonutSVG(containerId, items) {
+        const cont = document.getElementById(containerId);
+        const total = items.reduce((s, it) => s + it.value, 0);
+        if (total <= 0) {
+          cont.innerHTML = "<p class='hint'>Sin datos para graficar.</p>";
+          return;
+        }
+        const size = 212;
+        const cx = size / 2;
+        const cy = size / 2;
+        const r = 74;
+        const strokeW = 30;
+        const circ = 2 * Math.PI * r;
+        let offset = 0;
+
+        let circles = "";
+        items.forEach((it) => {
+          const pct = it.value / total;
+          const dash = pct * circ;
+          circles += `<circle class="svg-hover" cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${it.color}" stroke-width="${strokeW}"
+            stroke-dasharray="${dash} ${circ - dash}" stroke-dashoffset="${-offset}" transform="rotate(-90 ${cx} ${cy})"
+            data-tip="${it.label}: ${fmtMXN(it.value)} (${(pct * 100).toFixed(1)}%)"></circle>`;
+          offset += dash;
+        });
+
+        const legend = items
+          .map((it) => `<span class="legend-item"><i class="legend-dot" style="background:${it.color}"></i>${it.label}: <strong>${fmtShort(it.value)}</strong></span>`)
+          .join("");
+
+        cont.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+            ${circles}
+            <text x="${cx}" y="${cy - 5}" text-anchor="middle" font-size="10.5" fill="#64748b" font-weight="800">COSTO TOTAL</text>
+            <text x="${cx}" y="${cy + 15}" text-anchor="middle" font-size="14.5" fill="#0b1d3a" font-weight="800">${fmtShort(total)}</text>
+          </svg>
+          <div class="chart-legend">${legend}</div>
+        `;
+        enlazarTooltips(cont);
+      }
+
+      function dibujarBarrasAnualesSVG(containerId, filas) {
+        const cont = document.getElementById(containerId);
+        if (!filas.length) {
+          cont.innerHTML = "<p class='hint'>Sin datos.</p>";
+          return;
+        }
+        const totalAnios = Math.ceil(filas.length / 12);
+        const datos = [];
+        let maxAnual = 1;
+        for (let a = 1; a <= totalAnios; a++) {
+          const slice = filas.slice((a - 1) * 12, a * 12);
+          const cap = slice.reduce((s, f) => s + f.amortizacion + f.prepago + f.apoyoInf, 0);
+          const int = slice.reduce((s, f) => s + f.interes, 0);
+          if (cap + int > maxAnual) maxAnual = cap + int;
+          datos.push({ anio: a, cap: cap, int: int });
+        }
+
+        const W = 540, H = 220, padL = 54, padB = 28, padT = 14, padR = 12;
+        const chartW = W - padL - padR;
+        const chartH = H - padT - padB;
+        const barW = Math.max(8, (chartW / datos.length) * 0.64);
+
+        let bars = "";
+        datos.forEach((d, idx) => {
+          const x = padL + (idx + 0.5) * (chartW / datos.length) - barW / 2;
+          const hCap = (d.cap / maxAnual) * chartH;
+          const hInt = (d.int / maxAnual) * chartH;
+          const yCap = padT + chartH - hCap;
+          const yInt = yCap - hInt;
+
+          bars += `
+            <rect class="svg-hover" x="${x}" y="${yCap}" width="${barW}" height="${hCap}" fill="#1e3f6e" rx="2"
+              data-tip="Año ${d.anio} • Capital: ${fmtMXN(d.cap)}"></rect>
+            <rect class="svg-hover" x="${x}" y="${yInt}" width="${barW}" height="${hInt}" fill="#d9a21b" rx="2"
+              data-tip="Año ${d.anio} • Intereses: ${fmtMXN(d.int)}"></rect>
+            <text x="${x + barW / 2}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#64748b" font-weight="700">A${d.anio}</text>
+          `;
+        });
+
+        cont.innerHTML = `
+          <svg width="100%" height="225" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+            <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="#e2e8f0" stroke-dasharray="4 4" />
+            <line x1="${padL}" y1="${padT + chartH / 2}" x2="${W - padR}" y2="${padT + chartH / 2}" stroke="#e2e8f0" stroke-dasharray="4 4" />
+            <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="#94a3b8" />
+            <text x="${padL - 6}" y="${padT + 8}" text-anchor="end" font-size="10" fill="#64748b" font-weight="600">${fmtShort(maxAnual)}</text>
+            <text x="${padL - 6}" y="${padT + chartH / 2 + 4}" text-anchor="end" font-size="10" fill="#64748b">${fmtShort(maxAnual / 2)}</text>
+            <text x="${padL - 6}" y="${padT + chartH}" text-anchor="end" font-size="10" fill="#64748b">$0</text>
+            ${bars}
+          </svg>
+          <div class="chart-legend">
+            <span class="legend-item"><i class="legend-dot" style="background:#1e3f6e"></i>Capital Amortizado</span>
+            <span class="legend-item"><i class="legend-dot" style="background:#d9a21b"></i>Intereses Pagados</span>
+          </div>
+        `;
+        enlazarTooltips(cont);
+      }
+
+      function dibujarLineaSaldoSVG(containerId, creditoBanco, corridaBase, corridaActiva) {
+        const cont = document.getElementById(containerId);
+        if (creditoBanco <= 0) {
+          cont.innerHTML = "<p class='hint'>Sin saldo.</p>";
+          return;
+        }
+        const totalAnios = Math.ceil(corridaBase.filas.length / 12);
+        const ptsBase = [creditoBanco];
+        const ptsAct = [creditoBanco];
+
+        for (let a = 1; a <= totalAnios; a++) {
+          const fb = corridaBase.filas[Math.min(a * 12 - 1, corridaBase.filas.length - 1)];
+          ptsBase.push(fb ? fb.saldoFinal : 0);
+
+          const idx = a * 12 - 1;
+          ptsAct.push(idx < corridaActiva.filas.length ? corridaActiva.filas[idx].saldoFinal : 0);
+        }
+
+        const W = 880, H = 225, padL = 62, padR = 24, padT = 18, padB = 30;
+        const chartW = W - padL - padR;
+        const chartH = H - padT - padB;
+        const n = ptsBase.length - 1 || 1;
+
+        const getX = (i) => padL + (i / n) * chartW;
+        const getY = (val) => padT + chartH - (val / creditoBanco) * chartH;
+
+        const pathBase = ptsBase.map((v, i) => (i === 0 ? "M" : "L") + getX(i) + "," + getY(v)).join(" ");
+        const pathAct = ptsAct.map((v, i) => (i === 0 ? "M" : "L") + getX(i) + "," + getY(v)).join(" ");
+        const areaAct = pathAct + ` L${getX(n)},${padT + chartH} L${getX(0)},${padT + chartH} Z`;
+
+        let labelsX = "";
+        let dots = "";
+        for (let i = 0; i <= n; i++) {
+          const x = getX(i);
+          labelsX += `<text x="${x}" y="${H - 8}" text-anchor="middle" font-size="10" fill="#64748b" font-weight="700">${i === 0 ? "Inicio" : "Año " + i}</text>`;
+          dots += `<circle class="svg-hover" cx="${x}" cy="${getY(ptsAct[i])}" r="4.5" fill="#0d8a4e" stroke="#fff" stroke-width="1.5"
+            data-tip="Año ${i} • Con abonos: ${fmtMXN(ptsAct[i])} | Sin abonos extra: ${fmtMXN(ptsBase[i])}"></circle>`;
+        }
+
+        cont.innerHTML = `
+          <svg width="100%" height="230" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+            <line x1="${padL}" y1="${padT}" x2="${W - padR}" y2="${padT}" stroke="#e2e8f0" stroke-dasharray="4 4" />
+            <line x1="${padL}" y1="${padT + chartH / 2}" x2="${W - padR}" y2="${padT + chartH / 2}" stroke="#e2e8f0" stroke-dasharray="4 4" />
+            <line x1="${padL}" y1="${padT + chartH}" x2="${W - padR}" y2="${padT + chartH}" stroke="#94a3b8" />
+            <text x="${padL - 8}" y="${padT + 8}" text-anchor="end" font-size="10" fill="#64748b" font-weight="700">${fmtShort(creditoBanco)}</text>
+            <text x="${padL - 8}" y="${padT + chartH / 2 + 4}" text-anchor="end" font-size="10" fill="#64748b">${fmtShort(creditoBanco / 2)}</text>
+            <text x="${padL - 8}" y="${padT + chartH}" text-anchor="end" font-size="10" fill="#64748b">$0</text>
+            <path d="${areaAct}" fill="rgba(13, 138, 78, 0.12)" />
+            <path d="${pathBase}" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="6 4" />
+            <path d="${pathAct}" fill="none" stroke="#0d8a4e" stroke-width="3" />
+            ${labelsX}
+            ${dots}
+          </svg>
+          <div class="chart-legend">
+            <span class="legend-item"><i class="legend-dot" style="background:#94a3b8"></i>Saldo sin abonos extra</span>
+            <span class="legend-item"><i class="legend-dot" style="background:#0d8a4e"></i>Saldo con abonos extra</span>
+          </div>
+        `;
+        enlazarTooltips(cont);
+      }
+
+      // CONTROL DE ESTADO E INTERFAZ
+      let lastResult = null;
+      const NOMBRES_CORTOS = { 1: "Tradicional", 2: "Apoyo Infonavit", 3: "Cofinavit" };
+      const CLAVE_ESCENARIOS = "simuladorHipotecario.escenarios";
+      let savedScenarios = [];
+      function armarEscenario(p, r) {
+        return {
+          titulo: NOMBRES_CORTOS[p.programaId] + " " + p.plazoAnios + "a",
+          subtitulo: r.prog.nombre + " • " + (p.productoId === 2 ? "Pagos Oportunos" : "Valora"),
+          params: p,
+          res: r
+        };
+      }
+      function guardarEscenarios() {
+        try { localStorage.setItem(CLAVE_ESCENARIOS, JSON.stringify(savedScenarios.map((s) => s.params))); } catch (e) {}
+      }
+
+      function mostrarToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 2600);
+      }
+
+      function leerFormulario() {
+        return {
+          programaId: Number(document.getElementById("programa").value),
+          modoCalculo: Number(document.getElementById("modoCalculo").value),
+          valorVivienda: Number(document.getElementById("valorVivienda").value) || 0,
+          ingresosMensuales: Number(document.getElementById("ingresosMensuales").value) || 0,
+          montoCreditoDirecto: Number(document.getElementById("montoCreditoDirecto").value) || 0,
+          sueldoCotizacion: Number(document.getElementById("sueldoCotizacion").value) || 0,
+          creditoInfonavit: Number(document.getElementById("creditoInfonavit").value) || 0,
+          subcuentaVivienda: Number(document.getElementById("subcuentaVivienda").value) || 0,
+          productoId: Number(document.getElementById("producto").value),
+          plazoAnios: Number(document.getElementById("plazo").value),
+          tasaAnual: (function () { const el = document.getElementById("tasaAnual"); let t = parseFloat(el.value); if (isNaN(t)) t = 10; return Math.min(Number(el.max), Math.max(Number(el.min), t)) / 100; })(),
+          tipoComision: Number(document.getElementById("tipoComision").value),
+          segurosExternos: Number(document.getElementById("segurosExternos").value),
+          valorDestructible: Number(document.getElementById("valorDestructibleInput").value) || 0,
+          fechaInicio: document.getElementById("fechaInicio").value || "2026-12-17",
+          prepagoRecurrente: Number(document.getElementById("prepagoMensualRecurrente").value) || 0,
+          prepagoMesUnico: Number(document.getElementById("prepagoMesUnico").value) || 0,
+          prepagoMontoUnico: Number(document.getElementById("prepagoMontoUnico").value) || 0,
+          estrategiaPrepago: document.getElementById("estrategiaPrepago").value
+        };
+      }
+
+      function actualizarVisibilidad(params) {
+        document.getElementById("groupValorVivienda").classList.toggle("hidden", params.modoCalculo !== 1);
+        document.getElementById("groupIngresos").classList.toggle("hidden", params.modoCalculo !== 2);
+        document.getElementById("groupMontoDirecto").classList.toggle("hidden", params.modoCalculo !== 3);
+
+        document.getElementById("boxApoyoInfonavit").classList.toggle("hidden", params.programaId !== 2);
+        document.getElementById("boxCofinavit").classList.toggle("hidden", params.programaId !== 3);
+        document.querySelectorAll(".row-cofin").forEach((el) => el.classList.toggle("hidden", params.programaId !== 3));
+      }
+
+      function filasTabla(filas) {
+        if (document.getElementById("vistaTabla").value !== "anual") return filas;
+        const out = [];
+        for (let i = 0; i < filas.length; i += 12) {
+          const g = filas.slice(i, i + 12);
+          const s = (k) => Number(g.reduce((a, f) => a + f[k], 0).toFixed(2));
+          out.push({
+            periodo: "Año " + (i / 12 + 1), fecha: g[0].fecha + " – " + g[g.length - 1].fecha, dias: s("dias"),
+            saldoInicial: g[0].saldoInicial, erogacion: s("erogacion"), interes: s("interes"),
+            amortizacion: s("amortizacion"), prepago: s("prepago"), penalizacion: s("penalizacion"),
+            apoyoInf: s("apoyoInf"), segVida: s("segVida"), segDanos: s("segDanos"),
+            pagoMensualTotal: s("pagoMensualTotal"), tasaAplicada: g[g.length - 1].tasaAplicada,
+            saldoFinal: g[g.length - 1].saldoFinal
+          });
+        }
+        return out;
+      }
+
+      function recalcular() {
+        const params = leerFormulario();
+        actualizarVisibilidad(params);
+        document.getElementById("prepagoMesUnico").max = params.plazoAnios * 12;
+        const res = ejecutarSimulacion(params);
+        lastResult = { params: params, res: res };
+
+        // Actualizar tarjeta contextual del programa activo
+        document.getElementById("guideCardTitle").textContent = res.prog.nombre;
+        document.getElementById("guideCardDesc").textContent = res.prog.resumen;
+
+        const alertEl = document.getElementById("policyAlert");
+        if (res.alertas.length > 0) {
+          alertEl.textContent = "Aviso de política del programa: " + res.alertas.join(" | ");
+          alertEl.classList.remove("hidden");
+        } else {
+          alertEl.classList.add("hidden");
+        }
+
+        const mes1 = res.corridaActiva.filas[0] || { pagoMensualTotal: 0, erogacion: 0 };
+        const aniosReales = Math.floor(res.corridaActiva.mesLiquidacion / 12);
+        const mesesRest = res.corridaActiva.mesLiquidacion % 12;
+
+        document.getElementById("kpiMensualidadTotal").textContent = fmtMXN(mes1.pagoMensualTotal);
+        document.getElementById("kpiErogacionBase").textContent = "Erogación: " + fmtMXN(mes1.erogacion) + " + Seguros";
+        document.getElementById("kpiCreditoBanco").textContent = fmtMXN(res.creditoBanco);
+        document.getElementById("kpiLtv").textContent = "Aforo (LTV): " + fmtPct(res.prog.ltvMax, 1) + " • ppm: " + res.ppm.toFixed(2);
+        document.getElementById("kpiInversionCliente").textContent = fmtMXN(res.inversionCliente);
+        document.getElementById("kpiEngancheGastos").textContent = "Enganche " + fmtMXN(res.enganche) + " + Gastos " + fmtMXN(res.gastosOriginacion);
+        document.getElementById("kpiCat").textContent = fmtPct(res.catSinIva, 1);
+        document.getElementById("kpiPlazoReal").textContent = "Liquida en: " + aniosReales + " años " + mesesRest + " meses";
+
+        document.getElementById("resValorVivienda").textContent = fmtMXN(res.valorVivienda);
+        document.getElementById("resCreditoMax").textContent = fmtMXN(res.creditoMaximo);
+        document.getElementById("resCreditoBanco").textContent = fmtMXN(res.creditoBanco);
+        document.getElementById("resCofinTotal").textContent = fmtMXN(res.cofinExtra);
+        document.getElementById("resEnganche").textContent = fmtMXN(res.enganche);
+        document.getElementById("resTotalRecursos").textContent = fmtMXN(res.valorVivienda);
+
+        document.getElementById("resImpuestos").textContent = fmtMXN(res.impuestosDerechos);
+        document.getElementById("resNotariales").textContent = fmtMXN(res.honorariosNotariales);
+        document.getElementById("resAvaluo").textContent = fmtMXN(res.avaluo);
+        document.getElementById("resComisionAp").textContent = fmtMXN(res.comisionApertura);
+        document.getElementById("resGastosOrig").textContent = fmtMXN(res.gastosOriginacion);
+        document.getElementById("resInversionTotal").textContent = fmtMXN(res.inversionCliente);
+
+        const ahorroIntereses = Math.max(0, res.corridaBase.totalIntereses - res.corridaActiva.totalIntereses);
+        const mesesAhorrados = Math.max(0, res.corridaBase.mesLiquidacion - res.corridaActiva.mesLiquidacion);
+        const ahorroNeto = ahorroIntereses - res.corridaActiva.totalPenalizacion;
+
+        document.getElementById("saveIntereses").textContent = fmtMXN(ahorroIntereses);
+        document.getElementById("saveMeses").textContent = mesesAhorrados + " meses";
+        document.getElementById("savePenalizacion").textContent = fmtMXN(res.corridaActiva.totalPenalizacion);
+        document.getElementById("saveNeto").textContent = fmtMXN(ahorroNeto);
+
+        const comPct = params.tipoComision === 2 ? res.prog.comPrepago : 0;
+        document.getElementById("lblPenalizacion").textContent = comPct > 0
+          ? "Penalización por prepago (" + (comPct * 100).toFixed(0) + "% + IVA)"
+          : "Penalización por prepago (no aplica)";
+        document.getElementById("resumenFrase").innerHTML =
+          "Con un crédito de <strong>" + fmtMXN(res.creditoBanco) + "</strong> pagarías <strong>" + fmtMXN(mes1.pagoMensualTotal) +
+          "</strong> al mes (primer mes, con seguros) y lo liquidarías en <strong>" + aniosReales + " años " + mesesRest +
+          " meses</strong>. En total pagarías <strong>" + fmtMXN(res.corridaActiva.totalPagado) +
+          "</strong> y necesitas <strong>" + fmtMXN(res.inversionCliente) + "</strong> al inicio (enganche + gastos).";
+        document.getElementById("stickyPago").textContent = fmtMXN(mes1.pagoMensualTotal);
+        const iMens = (params.tasaAnual / 12) * (365.25 / 360);
+        document.getElementById("formulaEjemplo").textContent =
+          "Con tus datos: i = " + (iMens * 100).toFixed(4) + "% mensual, n = " + (params.plazoAnios * 12) +
+          " → ppm = " + res.ppm.toFixed(2) + " → Erogación = (" + fmtMXN(res.creditoBanco) + " / 1,000) × " + res.ppm.toFixed(2);
+
+        const esPO = params.productoId === 2;
+        document.getElementById("carReca").textContent = esPO ? res.prog.recaPO : res.prog.recaValora;
+        document.getElementById("carProducto").textContent = res.prog.nombre + " (" + (esPO ? "Pagos Oportunos" : "Valora") + ")";
+        document.getElementById("carCat").textContent = fmtPct(res.catSinIva, 1);
+        document.getElementById("carTasa").textContent = fmtPct(params.tasaAnual, 2) + (esPO ? " (Disminuye 0.20% anual)" : " (Tasa Fija Valora)");
+        document.getElementById("carMonto").textContent = fmtMXN(res.creditoBanco);
+        document.getElementById("carMontoTotal").textContent = fmtMXN(res.corridaActiva.totalPagado);
+        document.getElementById("carPlazo").textContent = params.plazoAnios + " años (" + (params.plazoAnios * 12) + " meses)";
+        const diaCorte = Number((params.fechaInicio.split("-")[2]) || 17);
+        document.getElementById("carFechaLimite").textContent = "El día " + diaCorte + " de cada mes";
+
+        document.getElementById("amortBody").innerHTML = filasTabla(res.corridaActiva.filas)
+          .map((f) => `
+            <tr>
+              <td>${f.periodo}</td>
+              <td>${f.fecha}</td>
+              <td>${f.dias}</td>
+              <td>${fmtMXN(f.saldoInicial)}</td>
+              <td>${fmtMXN(f.erogacion)}</td>
+              <td>${fmtMXN(f.interes)}</td>
+              <td>${fmtMXN(f.amortizacion)}</td>
+              <td>${fmtMXN(f.prepago)}</td>
+              <td>${fmtMXN(f.penalizacion)}</td>
+              <td>${fmtMXN(f.apoyoInf)}</td>
+              <td>${fmtMXN(f.segVida)}</td>
+              <td>${fmtMXN(f.segDanos)}</td>
+              <td><strong>${fmtMXN(f.pagoMensualTotal)}</strong></td>
+              <td>${fmtPct(f.tasaAplicada, 2)}</td>
+              <td><strong>${fmtMXN(f.saldoFinal)}</strong></td>
+            </tr>
+          `)
+          .join("");
+
+        dibujarDonutSVG("donutContainer", [
+          { label: "Capital", value: res.creditoBanco, color: "#1e3f6e" },
+          { label: "Intereses", value: res.corridaActiva.totalIntereses, color: "#d9a21b" },
+          { label: "Seguros", value: res.corridaActiva.totalSeguros, color: "#7c93b3" },
+          { label: "Gastos Orig.", value: res.gastosOriginacion, color: "#0d8a4e" }
+        ]);
+        dibujarBarrasAnualesSVG("barContainer", res.corridaActiva.filas);
+        dibujarLineaSaldoSVG("lineContainer", res.creditoBanco, res.corridaBase, res.corridaActiva);
+      }
+
+      function renderizarComparador() {
+        const cont = document.getElementById("comparadorContainer");
+        document.getElementById("countScenarios").textContent = savedScenarios.length;
+        if (savedScenarios.length === 0) {
+          cont.innerHTML = "<p class='hint' style='padding:16px;'>Aún no has guardado escenarios. Configura un crédito y haz clic en <strong>+ Guardar Escenario</strong>.</p>";
+          return;
+        }
+        const headers = savedScenarios.map((s, i) => `<th>Escenario ${i + 1}: ${s.titulo}</th>`).join("");
+        const fila = (lbl, fn) => `<tr><td style="text-align:left;"><strong>${lbl}</strong></td>${savedScenarios.map((s) => `<td>${fn(s)}</td>`).join("")}</tr>`;
+        cont.innerHTML = `
+          <table class="amort-table">
+            <thead><tr><th style="text-align:left;">Concepto</th>${headers}</tr></thead>
+            <tbody>
+              ${fila("Programa y Esquema", (s) => s.subtitulo)}
+              ${fila("Valor Vivienda", (s) => fmtMXN(s.res.valorVivienda))}
+              ${fila("Crédito Banco", (s) => fmtMXN(s.res.creditoBanco))}
+              ${fila("Plazo Contratado", (s) => s.params.plazoAnios + " años")}
+              ${fila("Plazo Real Liquidación", (s) => Math.floor(s.res.corridaActiva.mesLiquidacion / 12) + " años " + (s.res.corridaActiva.mesLiquidacion % 12) + " meses")}
+              ${fila("Erogación Mensual Base", (s) => fmtMXN(s.res.corridaActiva.filas[0] ? s.res.corridaActiva.filas[0].erogacion : 0))}
+              ${fila("Pago Total Mes 1", (s) => fmtMXN(s.res.corridaActiva.filas[0] ? s.res.corridaActiva.filas[0].pagoMensualTotal : 0))}
+              ${fila("Inversión Inicial Cliente", (s) => fmtMXN(s.res.inversionCliente))}
+              ${fila("Intereses Totales", (s) => fmtMXN(s.res.corridaActiva.totalIntereses))}
+              ${fila("Monto Total Pagado", (s) => fmtMXN(s.res.corridaActiva.totalPagado))}
+              ${fila("CAT Sin IVA", (s) => fmtPct(s.res.catSinIva, 1))}
+            </tbody>
+          </table>
+        `;
+      }
+
+      // MODAL GUÍA DE PROGRAMAS Y SEGUROS
+      const guideModal = document.getElementById("guideModal");
+      document.getElementById("btnOpenGuide").addEventListener("click", () => guideModal.classList.add("open"));
+      document.getElementById("btnInlineGuide").addEventListener("click", () => guideModal.classList.add("open"));
+      document.getElementById("btnCloseGuide").addEventListener("click", () => guideModal.classList.remove("open"));
+      guideModal.addEventListener("click", (e) => {
+        if (e.target === guideModal) guideModal.classList.remove("open");
+      });
+
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".tab-btn").forEach((b) => { b.classList.remove("active"); b.setAttribute("aria-selected", "false"); });
+          document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+          btn.classList.add("active");
+          btn.setAttribute("aria-selected", "true");
+          document.getElementById(btn.getAttribute("data-tab")).classList.add("active");
+        });
+      });
+
+      function acotarCampo(el) {
+        if (el.type !== "number" || el.value === "") return false;
+        const v = Number(el.value);
+        const min = el.min !== "" ? Number(el.min) : -Infinity;
+        const max = el.max !== "" ? Number(el.max) : Infinity;
+        const nuevo = Math.min(max, Math.max(min, v));
+        if (nuevo !== v) { el.value = nuevo; return true; }
+        return false;
+      }
+      document.querySelectorAll("input, select").forEach((el) => {
+        if (el.tagName === "SELECT") { el.addEventListener("change", recalcular); return; }
+        el.addEventListener("input", recalcular);
+        el.addEventListener("change", () => {
+          if (acotarCampo(el)) { mostrarToast("Valor ajustado al rango permitido"); recalcular(); }
+        });
+      });
+
+      document.getElementById("btnGoldenTest").addEventListener("click", () => {
+        document.getElementById("programa").value = "1";
+        document.getElementById("modoCalculo").value = "1";
+        document.getElementById("valorVivienda").value = "100000";
+        document.getElementById("producto").value = "2";
+        document.getElementById("plazo").value = "15";
+        document.getElementById("tasaAnual").value = "10.00";
+        document.getElementById("tipoComision").value = "2";
+        document.getElementById("segurosExternos").value = "2";
+        document.getElementById("valorDestructibleInput").value = "0";
+        document.getElementById("fechaInicio").value = "2026-12-17";
+        document.getElementById("prepagoMensualRecurrente").value = "0";
+        document.getElementById("prepagoMontoUnico").value = "0";
+        recalcular();
+        mostrarToast("Caso de prueba del Excel cargado ($100,000)");
+      });
+
+      document.getElementById("btnSaveScenario").addEventListener("click", () => {
+        if (!lastResult) return;
+        if (savedScenarios.length >= 3) savedScenarios.shift();
+        const p = lastResult.params;
+        const r = lastResult.res;
+        savedScenarios.push({
+          titulo: NOMBRES_CORTOS[p.programaId] + " " + p.plazoAnios + "a",
+          subtitulo: r.prog.nombre + " • " + (p.productoId === 2 ? "Pagos Oportunos" : "Valora"),
+          params: p,
+          res: r
+        });
+        renderizarComparador();
+        guardarEscenarios();
+        mostrarToast("Escenario #" + savedScenarios.length + " guardado en el Comparador");
+      });
+
+      document.getElementById("btnClearScenarios").addEventListener("click", () => {
+        savedScenarios = [];
+        renderizarComparador();
+        guardarEscenarios();
+        mostrarToast("Comparador limpiado");
+      });
+
+      document.getElementById("btnExportCsv").addEventListener("click", () => {
+        if (!lastResult) return;
+        const headers = [
+          "Periodo", "Fecha", "Dias", "Saldo Inicial", "Erogacion",
+          "Interes", "Amortizacion", "Prepago", "Penalizacion",
+          "Apoyo Infonavit", "Seguro Vida", "Seguro Danos", "Pago Total", "Tasa", "Saldo Final"
+        ];
+        const rows = lastResult.res.corridaActiva.filas.map((f) => [
+          f.periodo, f.fecha, f.dias, f.saldoInicial, f.erogacion,
+          f.interes, f.amortizacion, f.prepago, f.penalizacion,
+          f.apoyoInf, f.segVida, f.segDanos, f.pagoMensualTotal,
+          (f.tasaAplicada * 100).toFixed(2) + "%", f.saldoFinal
+        ]);
+        const csv = [headers].concat(rows).map((r) => r.join(",")).join("\n");
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "corrida_hipotecaria.csv";
+        link.click();
+        mostrarToast("Tabla de amortización descargada en CSV");
+      });
+
+      // Accesibilidad, impresión, modo presentación y escenarios guardados
+      document.querySelector(".tabs-bar").setAttribute("role", "tablist");
+      document.querySelectorAll(".tab-btn").forEach((b) => {
+        b.setAttribute("role", "tab");
+        b.setAttribute("aria-selected", b.classList.contains("active") ? "true" : "false");
+      });
+      document.querySelectorAll(".tab-panel").forEach((p) => p.setAttribute("role", "tabpanel"));
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") guideModal.classList.remove("open"); });
+      document.getElementById("btnPrint").addEventListener("click", () => {
+        document.body.classList.add("printing-car");
+        window.print();
+      });
+      window.addEventListener("afterprint", () => document.body.classList.remove("printing-car"));
+      document.getElementById("btnPresent").addEventListener("click", (e) => {
+        const on = document.documentElement.classList.toggle("presenting");
+        e.currentTarget.setAttribute("aria-pressed", String(on));
+        e.currentTarget.textContent = on ? "Salir de presentación" : "Modo presentación";
+      });
+      try {
+        const guardados = JSON.parse(localStorage.getItem(CLAVE_ESCENARIOS) || "[]");
+        savedScenarios = guardados.slice(0, 3).map((p) => armarEscenario(p, ejecutarSimulacion(p)));
+      } catch (e) { savedScenarios = []; }
+
+      renderizarComparador();
+      recalcular();
+    })();
+  </script>
+</body>
+</html>
