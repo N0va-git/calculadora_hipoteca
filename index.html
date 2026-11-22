@@ -145,7 +145,9 @@
     }
 
     .hero-title-box h1 {
-      font-size: 1.44rem;
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      letter-spacing: -0.5px;
+      line-height: 1.08;
       font-weight: 800;
       letter-spacing: -0.3px;
     }
@@ -786,6 +788,19 @@
     }
 
     /* ===== MEJORAS V2 ===== */
+    .abono-fila { display: grid; grid-template-columns: 1fr 1fr auto; gap: 14px; align-items: end; margin-top: 12px; }
+    .form-group label { display: flex; align-items: center; gap: 6px; white-space: normal; overflow: visible; }
+    .info-btn { width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--crimson); background: #fff; color: var(--crimson); font: italic 700 11px/1 Georgia, serif; cursor: pointer; padding: 0; flex: 0 0 auto; }
+    .info-btn:hover { background: var(--crimson); color: #fff; }
+    #infoPop { position: absolute; z-index: 1200; display: none; max-width: 300px; background: #0b1d3a; color: #fff; padding: 12px 14px; border-radius: 10px; font-size: 0.8rem; line-height: 1.5; box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-weight: 400; }
+    #infoPop strong { display: block; color: #f5c542; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 6px; }
+    #infoPop strong:first-child { margin-top: 0; }
+    .whatif td.pos { color: #b45309; font-weight: 700; } .whatif td.neg { color: #0d8a4e; font-weight: 700; }
+    .slider { width: 100%; margin-top: 8px; accent-color: var(--crimson); cursor: pointer; height: 22px; }
+    .slider-marks { display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--muted); font-weight: 700; margin-top: -2px; }
+    .footer-brand { display: flex; align-items: center; gap: 14px; }
+    .footer-brand span { font-size: 0.8rem; color: #94a3b8; }
+    .footer-logo { height: 64px; width: auto; background: #fff; border-radius: 10px; padding: 6px; }
     html { scroll-behavior: smooth; }
     a.btn { text-decoration: none; }
     :focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
@@ -820,7 +835,7 @@
     @media (max-width: 640px) {
       .container { padding: 0 14px; }
       .hero-illustration { display: none; }
-      .hero-title-box h1 { font-size: 1.2rem; }
+      .hero-title-box h1 { font-size: 1.75rem; }
       .hero-actions { width: 100%; }
       .hero-actions .btn { flex: 1 1 auto; justify-content: center; }
       .kpi-grid { grid-template-columns: 1fr; }
@@ -862,8 +877,6 @@
         </div>
         <div class="hero-title-box">
           <div class="hero-badges">
-            <span class="tag">Proyecto Final • Matemáticas Financieras</span>
-            <span class="tag">UNAM · FES Acatlán</span>
             <span class="live-pill"><i class="live-dot"></i> Cálculo en Tiempo Real • Base 360</span>
           </div>
           <h1>Simulador Hipotecario Residencial</h1>
@@ -876,8 +889,8 @@
           Guía de Créditos y Seguros
         </button>
         <button type="button" id="btnPresent" class="btn btn-glass" aria-pressed="false">Modo presentación</button>
-        <button type="button" id="btnGoldenTest" class="btn btn-glass">
-          Validar con Excel ($100k)
+        <button type="button" id="btnGoldenTest" class="btn btn-glass" title="Carga el caso de prueba del Excel ($100,000)">
+          Validar
         </button>
         <button type="button" id="btnSaveScenario" class="btn btn-primary">
           + Guardar Escenario
@@ -928,7 +941,7 @@
           <label for="valorVivienda">Valor de la Vivienda (MXN)</label>
           <div class="input-affix">
             <span class="prefix">$</span>
-            <input type="number" id="valorVivienda" class="has-prefix" value="1500000" min="50000" step="1000" />
+            <input type="text" inputmode="decimal" autocomplete="off" data-money id="valorVivienda" class="has-prefix" value="1,500,000" min="50000" step="1000" />
           </div>
         </div>
 
@@ -936,7 +949,7 @@
           <label for="ingresosMensuales">Ingresos Mensuales Comprobables</label>
           <div class="input-affix">
             <span class="prefix">$</span>
-            <input type="number" id="ingresosMensuales" class="has-prefix" value="45000" min="7500" step="500" />
+            <input type="text" inputmode="decimal" autocomplete="off" data-money id="ingresosMensuales" class="has-prefix" value="45,000" min="7500" step="500" />
           </div>
         </div>
 
@@ -944,7 +957,7 @@
           <label for="montoCreditoDirecto">Monto de Crédito Solicitado</label>
           <div class="input-affix">
             <span class="prefix">$</span>
-            <input type="number" id="montoCreditoDirecto" class="has-prefix" value="1500000" min="120000" step="5000" />
+            <input type="text" inputmode="decimal" autocomplete="off" data-money id="montoCreditoDirecto" class="has-prefix" value="1,500,000" min="120000" step="5000" />
           </div>
         </div>
 
@@ -955,7 +968,7 @@
             <label for="sueldoCotizacion">Sueldo Mensual Cotización IMSS</label>
             <div class="input-affix">
               <span class="prefix">$</span>
-              <input type="number" id="sueldoCotizacion" class="has-prefix" value="35000" min="0" step="500" />
+              <input type="text" inputmode="decimal" autocomplete="off" data-money id="sueldoCotizacion" class="has-prefix" value="35,000" min="0" step="500" />
             </div>
             <span class="hint">Tope legal 25 UMAs ($89,155.60/mes). Abona 5% bimestral directo a capital.</span>
           </div>
@@ -969,14 +982,14 @@
               <label for="creditoInfonavit">Crédito Infonavit</label>
               <div class="input-affix">
                 <span class="prefix">$</span>
-                <input type="number" id="creditoInfonavit" class="has-prefix" value="450000" min="0" step="5000" />
+                <input type="text" inputmode="decimal" autocomplete="off" data-money id="creditoInfonavit" class="has-prefix" value="450,000" min="0" step="5000" />
               </div>
             </div>
             <div class="form-group">
               <label for="subcuentaVivienda">Subcuenta Viv.</label>
               <div class="input-affix">
                 <span class="prefix">$</span>
-                <input type="number" id="subcuentaVivienda" class="has-prefix" value="120000" min="0" step="5000" />
+                <input type="text" inputmode="decimal" autocomplete="off" data-money id="subcuentaVivienda" class="has-prefix" value="120,000" min="0" step="5000" />
               </div>
             </div>
           </div>
@@ -989,7 +1002,7 @@
             <label for="producto">Producto / Esquema</label>
             <select id="producto">
               <option value="2" selected>Pagos Oportunos</option>
-              <option value="1">Valora (Tasa Fija)</option>
+              <option value="1">Valora (simplificado: pago fijo)</option>
             </select>
           </div>
 
@@ -1001,6 +1014,8 @@
               <option value="15" selected>15 años (180 m)</option>
               <option value="20">20 años (240 m)</option>
             </select>
+            <input type="range" id="sliderPlazo" class="slider" min="0" max="3" step="1" value="2" aria-label="Plazo del crédito" />
+            <div class="slider-marks"><span>7</span><span>10</span><span>15</span><span>20 años</span></div>
           </div>
         </div>
 
@@ -1008,9 +1023,11 @@
           <div class="form-group">
             <label for="tasaAnual">Tasa Anual Inicial</label>
             <div class="input-affix">
-              <input type="number" id="tasaAnual" class="has-suffix" value="10.00" min="6.00" max="18.00" step="0.05" />
+              <input type="number" id="tasaAnual" class="has-suffix" value="10.00" min="1.00" max="30.00" step="0.01" />
               <span class="suffix">%</span>
             </div>
+            <input type="range" id="sliderTasa" class="slider" min="6" max="18" step="0.05" value="10" aria-label="Tasa anual inicial" />
+            <div class="slider-marks"><span>6%</span><span>18%</span></div>
           </div>
 
           <div class="form-group">
@@ -1039,7 +1056,7 @@
             <label for="valorDestructibleInput">Valor Destructible</label>
             <div class="input-affix">
               <span class="prefix">$</span>
-              <input type="number" id="valorDestructibleInput" class="has-prefix" value="0" min="0" step="5000" />
+              <input type="text" inputmode="decimal" autocomplete="off" data-money id="valorDestructibleInput" class="has-prefix" value="0" min="0" step="5000" />
             </div>
           </div>
         </div>
@@ -1047,7 +1064,7 @@
         <div class="form-group">
           <label for="fechaInicio">Fecha de Inicio / Corte Mensual</label>
           <input type="date" id="fechaInicio" value="2026-12-17" />
-          <span class="hint">Si eliges un día 29, 30 o 31, se ajusta al último día de cada mes.</span>
+          <span class="hint">Por defecto sigue la regla del Excel: corte el día 3 o el 17 según la fecha de hoy. Puedes cambiarla.</span>
         </div>
         </div>
         </details>
@@ -1167,6 +1184,16 @@
             <div id="lineContainer" class="svg-box"></div>
           </div>
         </div>
+        <div class="card" id="cardWhatIf">
+          <h3 style="margin-bottom:6px;">¿Qué pasa si…?</h3>
+          <p class="hint" style="margin-bottom:10px;">Comparamos tu simulación con pequeños cambios, usando las mismas fórmulas. Verde = mejora, naranja = empeora.</p>
+          <div style="overflow-x:auto;">
+            <table class="amort-table whatif">
+              <thead><tr><th>Escenario</th><th>Mensualidad (mes 1)</th><th>Cambio</th><th>Intereses totales</th><th>Cambio</th><th>Liquida en</th></tr></thead>
+              <tbody id="whatIfBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- PESTAÑA 2: SIMULADOR DINÁMICO DE ABONOS A CAPITAL -->
@@ -1191,21 +1218,25 @@
               <label for="prepagoMensualRecurrente">Abono Extra Recurrente Mensual</label>
               <div class="input-affix">
                 <span class="prefix">$</span>
-                <input type="number" id="prepagoMensualRecurrente" class="has-prefix" value="0" min="0" step="500" />
+                <input type="text" inputmode="decimal" autocomplete="off" data-money id="prepagoMensualRecurrente" class="has-prefix" value="0" min="0" step="500" />
               </div>
             </div>
             <div class="form-group">
-              <label for="prepagoMesUnico">Mes del Abono Único (#)</label>
+              <label for="prepagoMesUnico">Abono único 1: mes (#)</label>
               <input type="number" id="prepagoMesUnico" value="12" min="1" max="240" />
             </div>
             <div class="form-group">
-              <label for="prepagoMontoUnico">Monto del Abono Único</label>
+              <label for="prepagoMontoUnico">Abono único 1: monto</label>
               <div class="input-affix">
                 <span class="prefix">$</span>
-                <input type="number" id="prepagoMontoUnico" class="has-prefix" value="0" min="0" step="1000" />
+                <input type="text" inputmode="decimal" autocomplete="off" data-money id="prepagoMontoUnico" class="has-prefix" value="0" min="0" step="1000" />
               </div>
             </div>
           </div>
+
+          <div id="abonosExtra"></div>
+          <button type="button" id="btnAddAbono" class="btn btn-outline" style="margin-top: 12px;">＋ Agregar otro abono único</button>
+          <p class="hint" style="margin-top: 8px;">Puedes agregar hasta 10 abonos únicos en meses distintos. Si coinciden en el mismo mes, se suman.</p>
 
           <div class="savings-box">
             <div>
@@ -1349,7 +1380,7 @@
           <dt>ppm (factor al millar)</dt><dd>Pago mensual por cada $1,000 de crédito. Se obtiene con la fórmula de anualidad.</dd>
           <dt>Erogación</dt><dd>Pago mensual base (capital + intereses), sin seguros.</dd>
           <dt>CAT</dt><dd>Costo Anual Total: el costo real del crédito incluyendo comisiones y seguros; sirve para comparar ofertas.</dd>
-          <dt>Pagos Oportunos / Valora</dt><dd>Pagos Oportunos baja la tasa 0.20% cada año si pagas puntual; Valora mantiene tasa fija.</dd>
+          <dt>Pagos Oportunos / Valora</dt><dd>Pagos Oportunos baja la tasa 0.20% en los años 2, 3 y 4 y 0.15% en el año 5 (máximo 0.75%) si pagas puntual. Valora aquí es una versión simplificada de pago fijo; en Scotiabank el pago crece cada año.</dd>
           <dt>Valor destructible</dt><dd>Valor de la construcción sin el terreno; sobre él se calcula el seguro de daños.</dd>
           <dt>Prepago</dt><dd>Abono extra a capital para terminar antes de pagar o bajar tu mensualidad.</dd>
           <dt>Saldo insoluto</dt><dd>Lo que todavía debes del crédito después de cada pago.</dd>
@@ -1360,11 +1391,16 @@
 
   <footer class="site-footer">
     <div class="container">
-      <strong>UNAM · Facultad de Estudios Superiores Acatlán</strong>
+      <div class="footer-brand">
+        <img src="unam-logo.png" alt="Escudo de la UNAM" class="footer-logo" onerror="this.style.display='none'" />
+        <div><strong>UNAM · FES Acatlán</strong><br /><span>Facultad de Estudios Superiores Acatlán</span></div>
+      </div>
       <ul id="equipo">
-        <li>Integrante 1</li>
-        <li>Integrante 2</li>
-        <li>Integrante 3</li>
+        <li>Zamá Maldonado</li>
+        <li>Juliana Rodríguez</li>
+        <li>David Morales</li>
+        <li>Carlos Olvera</li>
+        <li>Yosu Hernandez</li>
       </ul>
       <p class="disclaimer">Simulador con fines exclusivamente educativos. Los resultados son estimaciones y no constituyen una oferta, cotización ni asesoría financiera. Las tasas, comisiones y requisitos reales dependen de cada institución.</p>
     </div>
@@ -1404,7 +1440,7 @@
         </div>
         <div class="guide-item">
           <h4>4. Pagos Oportunos vs. Valora</h4>
-          <p><strong>Valora</strong> mantiene tasa fija todo el plazo. <strong>Pagos Oportunos</strong> premia la puntualidad reduciendo la tasa en <strong>-0.20% cada año</strong> (hasta -1.00% acumulado) a partir del mes 13.</p>
+          <p><strong>Valora</strong> mantiene tasa fija todo el plazo. <strong>Pagos Oportunos</strong> premia la puntualidad reduciendo la tasa <strong>0.20% en los meses 13, 25 y 37 y 0.15% en el mes 49</strong> (máximo 0.75% acumulado).</p>
         </div>
         <div class="guide-item">
           <h4>5. Seguro de Vida y Desempleo</h4>
@@ -1434,11 +1470,9 @@
         IMPUESTOS_DERECHOS: 0.03,
         HONORARIOS_NOTARIALES: 0.02,
         IVA: 0.16,
-        DESC_ANUAL_PO: 0.002,
-        MAX_DESC_PO: 0.010,
-        CAPACIDAD_PAGO: 0.40,
+        DESCUENTOS_PO: [0.002, 0.002, 0.002, 0.0015], // años 2, 3, 4 y 5 (máx. 0.75%), igual que el Excel
         DIAS_MES_SALARIO: 30.4,
-        TASA_MINIMA_PO: 0.05
+        TASA_MINIMA_PO: 0
       };
 
       const PROGRAMAS = {
@@ -1449,9 +1483,10 @@
           comApertura: 0.0125,
           comPrepago: 0.03,
           ltvMax: 0.90,
+          pti: 0.55,
           ingresosMin: 10000,
           montoMin: 250000,
-          viviendaMin: 350000,
+          viviendaMin: 400000,
           recaPO: "0319-138-038229/06-03318-1225",
           recaValora: "0319-138-038232/05-03320-1225"
         },
@@ -1462,9 +1497,10 @@
           comApertura: 0.0075,
           comPrepago: 0.00,
           ltvMax: 0.95,
+          pti: 0.65,
           ingresosMin: 7500,
           montoMin: 250000,
-          viviendaMin: 350000,
+          viviendaMin: 400000,
           recaPO: "0319-138-038230/04-03319-1225",
           recaValora: "0319-138-038235/04-03321-1225"
         },
@@ -1475,6 +1511,7 @@
           comApertura: 0.0075,
           comPrepago: 0.00,
           ltvMax: 0.95,
+          pti: 0.65,
           ingresosMin: 7500,
           montoMin: 120000,
           viviendaMin: 300000,
@@ -1501,7 +1538,10 @@
         { max: 12000000, importe: 28000 },
         { max: 13000000, importe: 30000 },
         { max: 14000000, importe: 32000 },
-        { max: 15000000, importe: 34000 }
+        { max: 15000000, importe: 34000 },
+        { max: 20000000, importe: 37000 },
+        { max: 25000000, importe: 39000 },
+        { max: 30000000, importe: 40000 }
       ];
 
       function obtenerCostoAvaluo(valorVivienda) {
@@ -1509,7 +1549,7 @@
         for (let i = 0; i < TABLA_AVALUO.length; i++) {
           if (valorVivienda <= TABLA_AVALUO[i].max) return TABLA_AVALUO[i].importe;
         }
-        return 34000;
+        return 40000;
       }
 
       function calcularFactorMillar(tasaAnual, plazoAnios) {
@@ -1585,7 +1625,7 @@
 
           let tasaAplicada = cfg.tasaInicial;
           if (cfg.esPagosOportunos && anioTranscurrido > 0) {
-            const descuento = Math.min(anioTranscurrido * CONSTANTS.DESC_ANUAL_PO, CONSTANTS.MAX_DESC_PO);
+            const descuento = CONSTANTS.DESCUENTOS_PO.slice(0, anioTranscurrido).reduce((a, b) => a + b, 0);
             tasaAplicada = Math.max(CONSTANTS.TASA_MINIMA_PO, Number((cfg.tasaInicial - descuento).toFixed(5)));
           }
 
@@ -1602,7 +1642,7 @@
 
           const amortizacion = Number(Math.max(0, erogacion - interes).toFixed(2));
 
-          let prepago = cfg.prepagoRecurrente + (p === cfg.prepagoMesUnico ? cfg.prepagoMontoUnico : 0);
+          let prepago = cfg.prepagoRecurrente + (cfg.abonosUnicos || []).reduce((a, x) => a + (x.mes === p ? x.monto : 0), 0);
           const remanenteTrasAmort = Math.max(0, saldoInicial - amortizacion);
           if (prepago > remanenteTrasAmort) prepago = Number(remanenteTrasAmort.toFixed(2));
 
@@ -1617,12 +1657,12 @@
             apoyoInf = Number(Math.min(aportacionBimestralActual, remanenteTrasPrepago).toFixed(2));
           }
 
-          const saldoFinal = Number(Math.max(0, saldoInicial - amortizacion - prepago - apoyoInf).toFixed(2));
+          const saldoFinal = Number(Math.max(0, saldoInicial - amortizacion - prepago + penalizacion - apoyoInf).toFixed(2));
 
           const segVida = cfg.segurosExternos ? 0 : Number((saldoInicial * CONSTANTS.SEGURO_VIDA_MILLAR).toFixed(2));
-          const segDanos = cfg.segurosExternos ? 0 : Number((cfg.valorDestructible * CONSTANTS.SEGURO_DANOS_MILLAR).toFixed(2));
+          const segDanos = cfg.segurosExternos ? 0 : Number(((cfg.valorDestructible > 0 ? cfg.valorDestructible : cfg.valorVivienda) * CONSTANTS.SEGURO_DANOS_MILLAR).toFixed(2));
 
-          const pagoMensualTotal = Number((erogacion + prepago + penalizacion + segVida + segDanos).toFixed(2));
+          const pagoMensualTotal = Number((erogacion + prepago + segVida + segDanos).toFixed(2));
 
           filas.push({
             periodo: p,
@@ -1687,7 +1727,7 @@
           creditoMaximo = Number((valorVivienda * prog.ltvMax).toFixed(2));
           creditoBanco = Math.max(0, Number((creditoMaximo - (params.programaId === 3 ? params.creditoInfonavit : 0)).toFixed(2)));
         } else if (params.modoCalculo === 2) {
-          const pagoMaxAdmisible = params.ingresosMensuales * CONSTANTS.CAPACIDAD_PAGO;
+          const pagoMaxAdmisible = params.ingresosMensuales * prog.pti;
           creditoMaximo = Number((pagoMaxAdmisible / (ppm / 1000)).toFixed(2));
           creditoBanco = creditoMaximo;
           valorVivienda = Number((creditoBanco / prog.ltvMax).toFixed(2));
@@ -1711,6 +1751,7 @@
         const corridaBase = generarCorrida({
           creditoBanco: creditoBanco,
           valorDestructible: valorDestructible,
+          valorVivienda: valorVivienda,
           plazoAnios: params.plazoAnios,
           tasaInicial: params.tasaAnual,
           esPagosOportunos: params.productoId === 2,
@@ -1722,12 +1763,14 @@
           prepagoRecurrente: 0,
           prepagoMesUnico: 0,
           prepagoMontoUnico: 0,
+          abonosUnicos: [],
           estrategiaPrepago: "plazo"
         });
 
         const corridaActiva = generarCorrida({
           creditoBanco: creditoBanco,
           valorDestructible: valorDestructible,
+          valorVivienda: valorVivienda,
           plazoAnios: params.plazoAnios,
           tasaInicial: params.tasaAnual,
           esPagosOportunos: params.productoId === 2,
@@ -1739,6 +1782,7 @@
           prepagoRecurrente: params.prepagoRecurrente,
           prepagoMesUnico: params.prepagoMesUnico,
           prepagoMontoUnico: params.prepagoMontoUnico,
+          abonosUnicos: params.abonosUnicos || [{ mes: params.prepagoMesUnico, monto: params.prepagoMontoUnico }],
           estrategiaPrepago: params.estrategiaPrepago
         });
 
@@ -2001,26 +2045,53 @@
         setTimeout(() => t.classList.remove("show"), 2600);
       }
 
+      function leerNum(id) {
+        return Number(String(document.getElementById(id).value).replace(/,/g, "")) || 0;
+      }
+      function formatearMiles(el) {
+        const pos = el.selectionStart, antes = el.value.length;
+        let limpio = el.value.replace(/[^\d.]/g, "");
+        const iPunto = limpio.indexOf(".");
+        let entero = iPunto < 0 ? limpio : limpio.slice(0, iPunto);
+        const decimales = iPunto < 0 ? "" : limpio.slice(iPunto + 1).replace(/\./g, "").slice(0, 2);
+        entero = entero ? Number(entero).toLocaleString("en-US") : (iPunto >= 0 ? "0" : "");
+        el.value = entero + (iPunto >= 0 ? "." + decimales : "");
+        if (document.activeElement === el) {
+          const nueva = Math.max(0, pos + el.value.length - antes);
+          try { el.setSelectionRange(nueva, nueva); } catch (e) {}
+        }
+      }
+
       function leerFormulario() {
         return {
           programaId: Number(document.getElementById("programa").value),
           modoCalculo: Number(document.getElementById("modoCalculo").value),
-          valorVivienda: Number(document.getElementById("valorVivienda").value) || 0,
-          ingresosMensuales: Number(document.getElementById("ingresosMensuales").value) || 0,
-          montoCreditoDirecto: Number(document.getElementById("montoCreditoDirecto").value) || 0,
-          sueldoCotizacion: Number(document.getElementById("sueldoCotizacion").value) || 0,
-          creditoInfonavit: Number(document.getElementById("creditoInfonavit").value) || 0,
-          subcuentaVivienda: Number(document.getElementById("subcuentaVivienda").value) || 0,
+          valorVivienda: leerNum("valorVivienda"),
+          ingresosMensuales: leerNum("ingresosMensuales"),
+          montoCreditoDirecto: leerNum("montoCreditoDirecto"),
+          sueldoCotizacion: leerNum("sueldoCotizacion"),
+          creditoInfonavit: leerNum("creditoInfonavit"),
+          subcuentaVivienda: leerNum("subcuentaVivienda"),
           productoId: Number(document.getElementById("producto").value),
           plazoAnios: Number(document.getElementById("plazo").value),
           tasaAnual: (function () { const el = document.getElementById("tasaAnual"); let t = parseFloat(el.value); if (isNaN(t)) t = 10; return Math.min(Number(el.max), Math.max(Number(el.min), t)) / 100; })(),
           tipoComision: Number(document.getElementById("tipoComision").value),
           segurosExternos: Number(document.getElementById("segurosExternos").value),
-          valorDestructible: Number(document.getElementById("valorDestructibleInput").value) || 0,
+          valorDestructible: leerNum("valorDestructibleInput"),
           fechaInicio: document.getElementById("fechaInicio").value || "2026-12-17",
-          prepagoRecurrente: Number(document.getElementById("prepagoMensualRecurrente").value) || 0,
+          prepagoRecurrente: leerNum("prepagoMensualRecurrente"),
           prepagoMesUnico: Number(document.getElementById("prepagoMesUnico").value) || 0,
-          prepagoMontoUnico: Number(document.getElementById("prepagoMontoUnico").value) || 0,
+          prepagoMontoUnico: leerNum("prepagoMontoUnico"),
+          abonosUnicos: (function () {
+            const lista = [{ mes: Number(document.getElementById("prepagoMesUnico").value) || 0, monto: leerNum("prepagoMontoUnico") }];
+            document.querySelectorAll("#abonosExtra .abono-fila").forEach((f) => {
+              lista.push({
+                mes: Number(f.querySelector(".abono-mes").value) || 0,
+                monto: Number(String(f.querySelector(".abono-monto").value).replace(/,/g, "")) || 0
+              });
+            });
+            return lista;
+          })(),
           estrategiaPrepago: document.getElementById("estrategiaPrepago").value
         };
       }
@@ -2033,6 +2104,118 @@
         document.getElementById("boxApoyoInfonavit").classList.toggle("hidden", params.programaId !== 2);
         document.getElementById("boxCofinavit").classList.toggle("hidden", params.programaId !== 3);
         document.querySelectorAll(".row-cofin").forEach((el) => el.classList.toggle("hidden", params.programaId !== 3));
+      }
+
+      const INFO = {
+        programa: ["El tipo de crédito: Tradicional (solo banco), Apoyo Infonavit (tu patrón aporta cada bimestre) o Cofinavit (banco + Infonavit).", "Cambia el porcentaje que financia el banco, las comisiones y los mínimos permitidos."],
+        modoCalculo: ["Desde dónde parte el cálculo: el valor de la casa, tus ingresos o el crédito que quieres.", "Por ingresos, la página calcula el crédito máximo que podrías pagar."],
+        valorVivienda: ["Precio de la casa o departamento.", "El banco financia 90% o 95% de este valor; el resto es tu enganche. También define impuestos, notario y avalúo."],
+        ingresosMensuales: ["Lo que ganas al mes de forma comprobable.", "El pago mensual no debe pasar de 55% (Tradicional) o 65% (Apoyo/Cofinavit) de tus ingresos; con eso se calcula el crédito máximo."],
+        montoCreditoDirecto: ["Cantidad que quieres que te preste el banco.", "Con ese monto se calcula la mensualidad y el valor de casa que podrías comprar."],
+        sueldoCotizacion: ["Tu sueldo mensual registrado en el IMSS.", "Define cuánto aporta tu patrón cada bimestre (5% del salario, tope de 25 UMA) para abonar a capital."],
+        creditoInfonavit: ["Monto que te presta el Infonavit en Cofinavit.", "Se resta del crédito máximo: el banco presta solo la diferencia."],
+        subcuentaVivienda: ["Ahorro de tu subcuenta de vivienda que usas como parte del pago.", "Baja el enganche en efectivo que necesitas; no cambia la mensualidad."],
+        producto: ["El esquema de tasa: Pagos Oportunos baja la tasa si pagas puntual; Valora aquí es una versión simplificada de pago fijo.", "Con Pagos Oportunos pagas menos intereses y terminas unos meses antes."],
+        plazo: ["Años que tienes para pagar.", "Más años: mensualidad más baja pero más intereses. Menos años: lo contrario."],
+        tasaAnual: ["Tasa de interés anual con la que empieza el crédito.", "Es lo que más mueve el resultado: mensualidad, intereses y CAT. Escribe la tasa que corresponda a tu campaña en Scotiabank."],
+        tipoComision: ["Cómo cobra el banco: comisión por apertura (al inicio) o por pago anticipado (solo si abonas capital extra).", "Apertura sube lo que necesitas al inicio y el CAT; pago anticipado solo cuesta si haces prepagos."],
+        segurosExternos: ["Si contratas los seguros de vida y daños por fuera del banco.", "En NO se suman los seguros del banco a cada mensualidad; en SÍ no se suman."],
+        valorDestructibleInput: ["Valor de la construcción (sin terreno), base del seguro de daños.", "Si lo dejas en 0 se usa el valor total de la vivienda, igual que el Excel de Scotiabank."],
+        fechaInicio: ["Fecha del primer pago; el corte es el día 3 o el 17.", "Los intereses de cada mes usan sus días reales (28 a 31): la fecha mueve la parte de interés y capital, no la mensualidad."],
+        estrategiaPrepago: ["Qué hace el abono extra: acortar el plazo o bajar la mensualidad.", "Acortar el plazo ahorra más intereses; bajar el pago te da más holgura cada mes."],
+        prepagoMensualRecurrente: ["Dinero extra que abonas a capital cada mes.", "El saldo baja más rápido: menos intereses y menos meses de crédito."],
+        prepagoMesUnico: ["Número de mes en que harás un abono extra de una sola vez.", "Mientras más pronto, más intereses ahorras."],
+        prepagoMontoUnico: ["Cantidad del abono extra único.", "Baja el saldo en ese mes. Si hay comisión por pago anticipado, se suma una penalización con IVA al saldo."]
+      };
+      const popInfo = document.createElement("div");
+      popInfo.id = "infoPop";
+      popInfo.setAttribute("role", "tooltip");
+      document.body.appendChild(popInfo);
+      Object.keys(INFO).forEach((id) => {
+        const lab = document.querySelector('label[for="' + id + '"]');
+        if (!lab) return;
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "info-btn";
+        b.textContent = "i";
+        b.setAttribute("aria-label", "¿Qué es: " + lab.textContent.trim() + "?");
+        b.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          if (popInfo.dataset.id === id && popInfo.style.display === "block") { popInfo.style.display = "none"; return; }
+          popInfo.innerHTML = "<strong>¿Qué es?</strong>" + INFO[id][0] + "<strong>¿Cómo afecta al resultado?</strong>" + INFO[id][1];
+          popInfo.dataset.id = id;
+          popInfo.style.display = "block";
+          const r = b.getBoundingClientRect();
+          const w = popInfo.offsetWidth;
+          popInfo.style.left = Math.min(Math.max(8, r.left + window.scrollX - w / 2 + 9), window.scrollX + window.innerWidth - w - 8) + "px";
+          popInfo.style.top = r.bottom + window.scrollY + 8 + "px";
+        });
+        lab.appendChild(b);
+      });
+      document.addEventListener("click", () => { popInfo.style.display = "none"; });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") popInfo.style.display = "none"; });
+
+      // Fecha por defecto: misma regla del Excel (corte día 3 o 17 según el día de hoy)
+      (function () {
+        const h = new Date(), d = h.getDate();
+        const corte = d >= 3 && d <= 16 ? 3 : 17;
+        const f = new Date(h.getFullYear(), h.getMonth() + (d > corte ? 1 : 0), corte);
+        document.getElementById("fechaInicio").value =
+          f.getFullYear() + "-" + String(f.getMonth() + 1).padStart(2, "0") + "-" + String(corte).padStart(2, "0");
+      })();
+
+      function renderWhatIf(params, res) {
+        const mens = (c) => c.filas[0].erogacion + c.filas[0].segVida + c.filas[0].segDanos;
+        const liq = (c) => Math.floor(c.mesLiquidacion / 12) + " años " + (c.mesLiquidacion % 12) + " meses";
+        const act = res.corridaActiva;
+        const esc = [["Tu simulación actual", {}], ["Tasa 1 punto más baja", { tasaAnual: Math.max(0.01, params.tasaAnual - 0.01) }], ["Tasa 1 punto más alta", { tasaAnual: params.tasaAnual + 0.01 }]];
+        [7, 10, 15, 20].forEach((a) => { if (a !== params.plazoAnios) esc.push(["Plazo de " + a + " años", { plazoAnios: a }]); });
+        esc.push(["Abono extra de $1,000 al mes", { prepagoRecurrente: params.prepagoRecurrente + 1000 }]);
+        const dif = (v) => (Math.abs(v) < 0.005 ? "—" : (v > 0 ? "+" : "−") + fmtMXN(Math.abs(v)));
+        const cls = (v) => (Math.abs(v) < 0.005 ? "" : v > 0 ? "pos" : "neg");
+        document.getElementById("whatIfBody").innerHTML = esc.map(([nom, cambio], i) => {
+          const c = i === 0 ? act : ejecutarSimulacion({ ...params, ...cambio }).corridaActiva;
+          const dm = mens(c) - mens(act), di = c.totalIntereses - act.totalIntereses;
+          return "<tr><td>" + nom + "</td><td>" + fmtMXN(mens(c)) + "</td><td class='" + cls(dm) + "'>" + dif(dm) + "</td><td>" + fmtMXN(c.totalIntereses) + "</td><td class='" + cls(di) + "'>" + dif(di) + "</td><td>" + liq(c) + "</td></tr>";
+        }).join("");
+      }
+
+      function renumerarAbonos() {
+        document.querySelectorAll("#abonosExtra .abono-fila").forEach((f, i) => {
+          const ls = f.querySelectorAll("label");
+          ls[0].textContent = "Abono único " + (i + 2) + ": mes (#)";
+          ls[1].textContent = "Abono único " + (i + 2) + ": monto";
+        });
+      }
+      function limpiarAbonosExtra() {
+        document.getElementById("abonosExtra").innerHTML = "";
+      }
+      function agregarFilaAbono() {
+        const cont = document.getElementById("abonosExtra");
+        if (cont.children.length >= 9) { mostrarToast("Máximo 10 abonos únicos"); return; }
+        const f = document.createElement("div");
+        f.className = "abono-fila";
+        f.innerHTML =
+          '<div class="form-group"><label></label><input type="number" class="abono-mes" value="24" min="1" max="' + Number(document.getElementById("plazo").value) * 12 + '" /></div>' +
+          '<div class="form-group"><label></label><div class="input-affix"><span class="prefix">$</span><input type="text" inputmode="decimal" autocomplete="off" data-money class="has-prefix abono-monto" value="0" min="0" /></div></div>' +
+          '<button type="button" class="btn btn-outline abono-del" aria-label="Quitar este abono">✕</button>';
+        cont.appendChild(f);
+        const mes = f.querySelector(".abono-mes"), monto = f.querySelector(".abono-monto");
+        mes.addEventListener("input", recalcular);
+        mes.addEventListener("change", () => { if (acotarCampo(mes)) { mostrarToast("Valor ajustado al rango permitido"); recalcular(); } });
+        monto.addEventListener("input", () => { formatearMiles(monto); recalcular(); });
+        f.querySelector(".abono-del").addEventListener("click", () => { f.remove(); renumerarAbonos(); recalcular(); });
+        renumerarAbonos();
+        recalcular();
+      }
+
+      const PLAZOS = [7, 10, 15, 20];
+      function sincronizarSliders() {
+        const i = PLAZOS.indexOf(Number(document.getElementById("plazo").value));
+        document.getElementById("sliderPlazo").value = i < 0 ? 2 : i;
+        const t = parseFloat(document.getElementById("tasaAnual").value);
+        document.getElementById("sliderTasa").value = isNaN(t) ? 10 : t;
       }
 
       function filasTabla(filas) {
@@ -2054,9 +2237,11 @@
       }
 
       function recalcular() {
+        sincronizarSliders();
         const params = leerFormulario();
         actualizarVisibilidad(params);
         document.getElementById("prepagoMesUnico").max = params.plazoAnios * 12;
+        document.querySelectorAll(".abono-mes").forEach((e) => { e.max = params.plazoAnios * 12; });
         const res = ejecutarSimulacion(params);
         lastResult = { params: params, res: res };
 
@@ -2108,6 +2293,7 @@
         document.getElementById("savePenalizacion").textContent = fmtMXN(res.corridaActiva.totalPenalizacion);
         document.getElementById("saveNeto").textContent = fmtMXN(ahorroNeto);
 
+        renderWhatIf(params, res);
         const comPct = params.tipoComision === 2 ? res.prog.comPrepago : 0;
         document.getElementById("lblPenalizacion").textContent = comPct > 0
           ? "Penalización por prepago (" + (comPct * 100).toFixed(0) + "% + IVA)"
@@ -2127,7 +2313,7 @@
         document.getElementById("carReca").textContent = esPO ? res.prog.recaPO : res.prog.recaValora;
         document.getElementById("carProducto").textContent = res.prog.nombre + " (" + (esPO ? "Pagos Oportunos" : "Valora") + ")";
         document.getElementById("carCat").textContent = fmtPct(res.catSinIva, 1);
-        document.getElementById("carTasa").textContent = fmtPct(params.tasaAnual, 2) + (esPO ? " (Disminuye 0.20% anual)" : " (Tasa Fija Valora)");
+        document.getElementById("carTasa").textContent = fmtPct(params.tasaAnual, 2) + (esPO ? " (Baja hasta 0.75% en los años 2 a 5)" : " (Valora simplificado: tasa fija)");
         document.getElementById("carMonto").textContent = fmtMXN(res.creditoBanco);
         document.getElementById("carMontoTotal").textContent = fmtMXN(res.corridaActiva.totalPagado);
         document.getElementById("carPlazo").textContent = params.plazoAnios + " años (" + (params.plazoAnios * 12) + " meses)";
@@ -2215,15 +2401,19 @@
       });
 
       function acotarCampo(el) {
-        if (el.type !== "number" || el.value === "") return false;
-        const v = Number(el.value);
-        const min = el.min !== "" ? Number(el.min) : -Infinity;
-        const max = el.max !== "" ? Number(el.max) : Infinity;
+        const esDinero = el.hasAttribute("data-money");
+        if (el.type !== "number" && !esDinero) return false;
+        const crudo = esDinero ? el.value.replace(/,/g, "") : el.value;
+        if (crudo === "") return false;
+        const v = Number(crudo);
+        const min = el.getAttribute("min") !== null ? Number(el.getAttribute("min")) : -Infinity;
+        const max = el.getAttribute("max") !== null ? Number(el.getAttribute("max")) : Infinity;
         const nuevo = Math.min(max, Math.max(min, v));
-        if (nuevo !== v) { el.value = nuevo; return true; }
+        if (nuevo !== v) { el.value = esDinero ? nuevo.toLocaleString("en-US") : nuevo; return true; }
         return false;
       }
       document.querySelectorAll("input, select").forEach((el) => {
+        if (el.type === "range") return;
         if (el.tagName === "SELECT") { el.addEventListener("change", recalcular); return; }
         el.addEventListener("input", recalcular);
         el.addEventListener("change", () => {
@@ -2244,6 +2434,8 @@
         document.getElementById("fechaInicio").value = "2026-12-17";
         document.getElementById("prepagoMensualRecurrente").value = "0";
         document.getElementById("prepagoMontoUnico").value = "0";
+        limpiarAbonosExtra();
+        document.querySelectorAll("[data-money]").forEach(formatearMiles);
         recalcular();
         mostrarToast("Caso de prueba del Excel cargado ($100,000)");
       });
@@ -2293,6 +2485,18 @@
         mostrarToast("Tabla de amortización descargada en CSV");
       });
 
+      document.getElementById("sliderPlazo").addEventListener("input", (e) => {
+        document.getElementById("plazo").value = String(PLAZOS[Number(e.target.value)]);
+        recalcular();
+      });
+      document.getElementById("sliderTasa").addEventListener("input", (e) => {
+        document.getElementById("tasaAnual").value = Number(e.target.value).toFixed(2);
+        recalcular();
+      });
+      document.querySelectorAll("[data-money]").forEach((el) => {
+        el.addEventListener("input", () => formatearMiles(el));
+      });
+
       // Accesibilidad, impresión, modo presentación y escenarios guardados
       document.querySelector(".tabs-bar").setAttribute("role", "tablist");
       document.querySelectorAll(".tab-btn").forEach((b) => {
@@ -2315,6 +2519,8 @@
         const guardados = JSON.parse(localStorage.getItem(CLAVE_ESCENARIOS) || "[]");
         savedScenarios = guardados.slice(0, 3).map((p) => armarEscenario(p, ejecutarSimulacion(p)));
       } catch (e) { savedScenarios = []; }
+
+      document.getElementById("btnAddAbono").addEventListener("click", agregarFilaAbono);
 
       renderizarComparador();
       recalcular();
