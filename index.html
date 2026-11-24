@@ -1379,7 +1379,7 @@
           <dt>LTV / Aforo</dt><dd>Porcentaje del valor de la vivienda que financia el banco (ej. 90% = enganche de 10%).</dd>
           <dt>ppm (factor al millar)</dt><dd>Pago mensual por cada $1,000 de crédito. Se obtiene con la fórmula de anualidad.</dd>
           <dt>Erogación</dt><dd>Pago mensual base (capital + intereses), sin seguros.</dd>
-          <dt>CAT</dt><dd>Costo Anual Total: el costo real del crédito incluyendo comisiones y seguros; sirve para comparar ofertas.</dd>
+          <dt>CAT</dt><dd>Costo Anual Total: el costo real del crédito incluyendo comisiones y seguros; sirve para comparar ofertas. Sigue la Circular 21/2009 de Banxico; en Apoyo Infonavit, las aportaciones del patrón cuentan como pagos tuyos.</dd>
           <dt>Pagos Oportunos / Valora</dt><dd>Pagos Oportunos baja la tasa 0.20% en los años 2, 3 y 4 y 0.15% en el año 5 (máximo 0.75%) si pagas puntual. Valora aquí es una versión simplificada de pago fijo; en Scotiabank el pago crece cada año.</dd>
           <dt>Valor destructible</dt><dd>Valor de la construcción sin el terreno; sobre él se calcula el seguro de daños.</dd>
           <dt>Prepago</dt><dd>Abono extra a capital para terminar antes de pagar o bajar tu mensualidad.</dd>
@@ -1472,7 +1472,8 @@
         IVA: 0.16,
         DESCUENTOS_PO: [0.002, 0.002, 0.002, 0.0015], // años 2, 3, 4 y 5 (máx. 0.75%), igual que el Excel
         DIAS_MES_SALARIO: 30.4,
-        TASA_MINIMA_PO: 0
+        TASA_MINIMA_PO: 0,
+        GASTOS_INFONAVIT: 0.03
       };
 
       const PROGRAMAS = {
@@ -1725,7 +1726,9 @@
 
         if (params.modoCalculo === 1) {
           creditoMaximo = Number((valorVivienda * prog.ltvMax).toFixed(2));
-          creditoBanco = Math.max(0, Number((creditoMaximo - (params.programaId === 3 ? params.creditoInfonavit : 0)).toFixed(2)));
+          // Cofinavit (igual que el Excel): el banco presta hasta el aforo, pero nunca más de lo que falta
+          // después del crédito Infonavit y la subcuenta (el total no pasa de 100% del valor)
+          creditoBanco = Math.max(0, Number(Math.min(creditoMaximo, valorVivienda - cofinExtra).toFixed(2)));
         } else if (params.modoCalculo === 2) {
           const pagoMaxAdmisible = params.ingresosMensuales * prog.pti;
           creditoMaximo = Number((pagoMaxAdmisible / (ppm / 1000)).toFixed(2));
@@ -1744,7 +1747,9 @@
         const comisionApertura = params.tipoComision === 1 ? Number((creditoBanco * prog.comApertura).toFixed(2)) : 0;
         const comisionPrepagoPct = params.tipoComision === 2 ? prog.comPrepago : 0;
 
-        const gastosOriginacion = Number((impuestosDerechos + honorariosNotariales + avaluo + comisionApertura).toFixed(2));
+        // Cofinavit: el Infonavit cobra 3% de gastos de originación sobre su crédito
+        const gastosInfonavit = params.programaId === 3 ? Number((params.creditoInfonavit * CONSTANTS.GASTOS_INFONAVIT).toFixed(2)) : 0;
+        const gastosOriginacion = Number((impuestosDerechos + honorariosNotariales + avaluo + comisionApertura + gastosInfonavit).toFixed(2));
         const enganche = Number(Math.max(0, valorVivienda - creditoBanco - cofinExtra).toFixed(2));
         const inversionCliente = Number((enganche + gastosOriginacion).toFixed(2));
 
@@ -1789,7 +1794,8 @@
         const flujosCAT = [comisionApertura + avaluo - creditoBanco];
         for (let i = 0; i < corridaBase.filas.length; i++) {
           const f = corridaBase.filas[i];
-          flujosCAT.push(f.erogacion + f.segVida + f.segDanos);
+          // Banxico (Circular 21/2009, num. 5.5): las aportaciones patronales del Infonavit cuentan como pagos del cliente
+          flujosCAT.push(f.erogacion + f.apoyoInf + f.segVida + f.segDanos);
         }
         const tirMensual = calcularTIR(flujosCAT, 0.01);
         const catSinIva = creditoBanco > 0 && isFinite(tirMensual) ? Math.max(0, Math.pow(1 + tirMensual, 12) - 1) : 0;
@@ -1815,6 +1821,7 @@
           creditoMaximo: creditoMaximo,
           creditoBanco: creditoBanco,
           cofinExtra: cofinExtra,
+          gastosInfonavit: gastosInfonavit,
           enganche: enganche,
           impuestosDerechos: impuestosDerechos,
           honorariosNotariales: honorariosNotariales,
@@ -2113,8 +2120,8 @@
         ingresosMensuales: ["Lo que ganas al mes de forma comprobable.", "El pago mensual no debe pasar de 55% (Tradicional) o 65% (Apoyo/Cofinavit) de tus ingresos; con eso se calcula el crédito máximo."],
         montoCreditoDirecto: ["Cantidad que quieres que te preste el banco.", "Con ese monto se calcula la mensualidad y el valor de casa que podrías comprar."],
         sueldoCotizacion: ["Tu sueldo mensual registrado en el IMSS.", "Define cuánto aporta tu patrón cada bimestre (5% del salario, tope de 25 UMA) para abonar a capital."],
-        creditoInfonavit: ["Monto que te presta el Infonavit en Cofinavit.", "Se resta del crédito máximo: el banco presta solo la diferencia."],
-        subcuentaVivienda: ["Ahorro de tu subcuenta de vivienda que usas como parte del pago.", "Baja el enganche en efectivo que necesitas; no cambia la mensualidad."],
+        creditoInfonavit: ["Monto que te presta el Infonavit en Cofinavit.", "El banco presta hasta 95% del valor, pero nunca más de lo que falta después del crédito Infonavit y la subcuenta. El Infonavit cobra además 3% de gastos de originación sobre su crédito."],
+        subcuentaVivienda: ["Ahorro de tu subcuenta de vivienda que usas como parte del pago.", "Baja el enganche y, si junto con el crédito Infonavit supera el 5% del valor, también baja el crédito que presta el banco."],
         producto: ["El esquema de tasa: Pagos Oportunos baja la tasa si pagas puntual; Valora aquí es una versión simplificada de pago fijo.", "Con Pagos Oportunos pagas menos intereses y terminas unos meses antes."],
         plazo: ["Años que tienes para pagar.", "Más años: mensualidad más baja pero más intereses. Menos años: lo contrario."],
         tasaAnual: ["Tasa de interés anual con la que empieza el crédito.", "Es lo que más mueve el resultado: mensualidad, intereses y CAT. Escribe la tasa que corresponda a tu campaña en Scotiabank."],
@@ -2267,7 +2274,8 @@
         document.getElementById("kpiLtv").textContent = "Aforo (LTV): " + fmtPct(res.prog.ltvMax, 1) + " • ppm: " + res.ppm.toFixed(2);
         document.getElementById("kpiInversionCliente").textContent = fmtMXN(res.inversionCliente);
         document.getElementById("kpiEngancheGastos").textContent = "Enganche " + fmtMXN(res.enganche) + " + Gastos " + fmtMXN(res.gastosOriginacion);
-        document.getElementById("kpiCat").textContent = fmtPct(res.catSinIva, 1);
+        document.getElementById("kpiCat").innerHTML = fmtPct(res.catSinIva, 1) + ' <small style="font-size:0.5em; font-weight:700;">Sin IVA</small>';
+        document.getElementById("kpiCat").title = "CAT exacto: " + fmtPct(res.catSinIva, 4);
         document.getElementById("kpiPlazoReal").textContent = "Liquida en: " + aniosReales + " años " + mesesRest + " meses";
 
         document.getElementById("resValorVivienda").textContent = fmtMXN(res.valorVivienda);
@@ -2307,12 +2315,14 @@
         const iMens = (params.tasaAnual / 12) * (365.25 / 360);
         document.getElementById("formulaEjemplo").textContent =
           "Con tus datos: i = " + (iMens * 100).toFixed(4) + "% mensual, n = " + (params.plazoAnios * 12) +
-          " → ppm = " + res.ppm.toFixed(2) + " → Erogación = (" + fmtMXN(res.creditoBanco) + " / 1,000) × " + res.ppm.toFixed(2);
+          " → ppm = " + res.ppm.toFixed(2) + " → Erogación = (" + fmtMXN(res.creditoBanco) + " / 1,000) × " + res.ppm.toFixed(2) +
+          ". CAT sin redondear = " + fmtPct(res.catSinIva, 4) + " (se muestra con un decimal y \"Sin IVA\", como pide Banxico, num. 7).";
 
         const esPO = params.productoId === 2;
         document.getElementById("carReca").textContent = esPO ? res.prog.recaPO : res.prog.recaValora;
         document.getElementById("carProducto").textContent = res.prog.nombre + " (" + (esPO ? "Pagos Oportunos" : "Valora") + ")";
-        document.getElementById("carCat").textContent = fmtPct(res.catSinIva, 1);
+        document.getElementById("carCat").innerHTML = fmtPct(res.catSinIva, 1) + ' <small style="font-size:0.5em; font-weight:700;">Sin IVA</small>';
+        document.getElementById("carCat").title = "CAT exacto: " + fmtPct(res.catSinIva, 4);
         document.getElementById("carTasa").textContent = fmtPct(params.tasaAnual, 2) + (esPO ? " (Baja hasta 0.75% en los años 2 a 5)" : " (Valora simplificado: tasa fija)");
         document.getElementById("carMonto").textContent = fmtMXN(res.creditoBanco);
         document.getElementById("carMontoTotal").textContent = fmtMXN(res.corridaActiva.totalPagado);
@@ -2375,7 +2385,7 @@
               ${fila("Inversión Inicial Cliente", (s) => fmtMXN(s.res.inversionCliente))}
               ${fila("Intereses Totales", (s) => fmtMXN(s.res.corridaActiva.totalIntereses))}
               ${fila("Monto Total Pagado", (s) => fmtMXN(s.res.corridaActiva.totalPagado))}
-              ${fila("CAT Sin IVA", (s) => fmtPct(s.res.catSinIva, 1))}
+              ${fila("CAT", (s) => fmtPct(s.res.catSinIva, 1) + " Sin IVA")}
             </tbody>
           </table>
         `;
